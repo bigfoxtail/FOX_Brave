@@ -1,0 +1,2661 @@
+diff --git a/src/base/values.cc b/src/base/values.cc
+index ecca445..a3b4745 100644
+--- a/src/base/values.cc
++++ b/src/base/values.cc
+@@ -1351,7 +1351,7 @@ bool DictionaryValue::GetStringASCII(StringPiece path,
+     return false;
+ 
+   if (!IsStringASCII(out)) {
+-    NOTREACHED();
++//    NOTREACHED();
+     return false;
+   }
+ 
+diff --git a/src/brave/app/brave_main_delegate.cc b/src/brave/app/brave_main_delegate.cc
+index 8d30f5b..6713690 100644
+--- a/src/brave/app/brave_main_delegate.cc
++++ b/src/brave/app/brave_main_delegate.cc
+@@ -59,7 +59,7 @@ const char kBraveSyncServiceURL[] = "https://sync-v2.brave.com/v2";
+ // For local server development "http://localhost:8295/v2 can also be overriden
+ // by switches::kSyncServiceURL
+ // dev
+-const char kBraveSyncServiceURL[] = "https://sync-v2.brave.software/v2";
++const char kBraveSyncServiceURL[] = "https://sync-v2.brave.com/v2";
+ #endif
+ }  // namespace
+ 
+@@ -171,8 +171,8 @@ bool BraveMainDelegate::BasicStartupComplete(int* exit_code) {
+   }
+ 
+   // Brave's sync protocol does not use the sync service url
+-  command_line.AppendSwitchASCII(switches::kSyncServiceURL,
+-                                 kBraveSyncServiceURL);
++//  command_line.AppendSwitchASCII(switches::kSyncServiceURL,
++//                                 kBraveSyncServiceURL);
+ 
+   // Enabled features.
+   std::unordered_set<const char*> enabled_features = {
+diff --git a/src/brave/app/resources/brave_generated_resources_zh-CN.xtb b/src/brave/app/resources/brave_generated_resources_zh-CN.xtb
+index 8e70524..96a15e4 100644
+--- a/src/brave/app/resources/brave_generated_resources_zh-CN.xtb
++++ b/src/brave/app/resources/brave_generated_resources_zh-CN.xtb
+@@ -77,7 +77,7 @@
+ <translation id="4978786495456601191">指纹识别</translation>
+ <translation id="3570081523466826008">升级为 HTTPS 连接</translation>
+ <translation id="4824468494729001999">拦截脚本</translation>
+-<translation id="519861640102428255">外&amp; 观</translation>
++<translation id="519861640102428255">外 观</translation>
+ <translation id="4800195524776354947">在屏蔽图标上显示被拦截的项目的数量</translation>
+ <translation id="7498695072878479744">第三方网站上的 Google 登录按钮可用</translation>
+ <translation id="863171915776379000">Facebook 登录和嵌入式帖子可用</translation>
+diff --git a/src/brave/browser/brave_browser_main_parts.cc b/src/brave/browser/brave_browser_main_parts.cc
+index 2b1720e..0975088 100644
+--- a/src/brave/browser/brave_browser_main_parts.cc
++++ b/src/brave/browser/brave_browser_main_parts.cc
+@@ -113,6 +113,7 @@ void BraveBrowserMainParts::PreShutdown() {
+ 
+ void BraveBrowserMainParts::PreProfileInit() {
+   ChromeBrowserMainParts::PreProfileInit();
++/*
+ #if !defined(OS_ANDROID)
+   auto* command_line = base::CommandLine::ForCurrentProcess();
+   if (!base::FeatureList::IsEnabled(brave_sync::features::kBraveSync)) {
+@@ -125,6 +126,7 @@ void BraveBrowserMainParts::PreProfileInit() {
+     command_line->RemoveSwitch(switches::kDisableSync);
+   }
+ #endif
++*/
+ }
+ 
+ void BraveBrowserMainParts::PostProfileInit() {
+diff --git a/src/brave/browser/brave_content_browser_client.cc b/src/brave/browser/brave_content_browser_client.cc
+index 6ed6ede..ab40b37 100644
+--- a/src/brave/browser/brave_content_browser_client.cc
++++ b/src/brave/browser/brave_content_browser_client.cc
+@@ -71,6 +71,7 @@ using content::WebContents;
+ #endif
+ 
+ #if BUILDFLAG(ENABLE_EXTENSIONS)
++#include "brave/common/url_constants.h"
+ #include "chrome/browser/extensions/chrome_content_browser_client_extensions_part.h"
+ #include "extensions/browser/extension_registry.h"
+ using extensions::ChromeContentBrowserClientExtensionsPart;
+diff --git a/src/brave/browser/brave_profile_prefs.cc b/src/brave/browser/brave_profile_prefs.cc
+index f9286c1..33e08a3 100644
+--- a/src/brave/browser/brave_profile_prefs.cc
++++ b/src/brave/browser/brave_profile_prefs.cc
+@@ -113,7 +113,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
+   registry->RegisterBooleanPref(kHTTPSEVerywhereControlType, true);
+   registry->RegisterBooleanPref(kNoScriptControlType, false);
+   registry->RegisterBooleanPref(kAdControlType, true);
+-  registry->RegisterBooleanPref(kShieldsAdvancedViewEnabled, false);
++  registry->RegisterBooleanPref(kShieldsAdvancedViewEnabled, true);
+ 
+ #if !BUILDFLAG(USE_GCM_FROM_PLATFORM)
+   // PushMessaging
+diff --git a/src/brave/browser/browser_context_keyed_service_factories.cc b/src/brave/browser/browser_context_keyed_service_factories.cc
+index e133ad3..6130d38 100644
+--- a/src/brave/browser/browser_context_keyed_service_factories.cc
++++ b/src/brave/browser/browser_context_keyed_service_factories.cc
+@@ -11,7 +11,7 @@
+ #include "brave/browser/search_engines/search_engine_tracker.h"
+ #include "brave/browser/tor/tor_profile_service_factory.h"
+ #include "brave/components/brave_ads/browser/ads_service_factory.h"
+-#include "brave/browser/brave_rewards/rewards_service_factory.h"
++//#include "brave/browser/brave_rewards/rewards_service_factory.h"
+ #include "brave/components/greaselion/browser/buildflags/buildflags.h"
+ #include "brave/browser/ntp_background_images/view_counter_service_factory.h"
+ #include "brave/components/brave_wallet/browser/buildflags/buildflags.h"
+@@ -34,7 +34,7 @@ namespace brave {
+ 
+ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
+   brave_ads::AdsServiceFactory::GetInstance();
+-  brave_rewards::RewardsServiceFactory::GetInstance();
++//  brave_rewards::RewardsServiceFactory::GetInstance();
+   brave_shields::AdBlockPrefServiceFactory::GetInstance();
+   brave_shields::CookiePrefServiceFactory::GetInstance();
+ #if BUILDFLAG(ENABLE_GREASELION)
+diff --git a/src/brave/browser/extensions/BUILD.gn b/src/brave/browser/extensions/BUILD.gn
+index 354eda6..a93eedc 100644
+--- a/src/brave/browser/extensions/BUILD.gn
++++ b/src/brave/browser/extensions/BUILD.gn
+@@ -18,14 +18,14 @@ source_set("extensions") {
+     "api/brave_action_api.h",
+     "api/brave_extensions_api_client.cc",
+     "api/brave_extensions_api_client.h",
+-    "api/brave_rewards_api.cc",
+-    "api/brave_rewards_api.h",
++#    "api/brave_rewards_api.cc",
++#    "api/brave_rewards_api.h",
+     "api/brave_shields_api.cc",
+     "api/brave_shields_api.h",
+     "api/brave_theme_api.cc",
+     "api/brave_theme_api.h",
+-    "api/rewards_notifications_api.cc",
+-    "api/rewards_notifications_api.h",
++#    "api/rewards_notifications_api.cc",
++#    "api/rewards_notifications_api.h",
+     "api/settings_private/brave_prefs_util.cc",
+     "api/settings_private/brave_prefs_util.h",
+     "brave_component_extension_resource_manager.cc",
+diff --git a/src/brave/browser/extensions/brave_component_extension_resource_manager.cc b/src/brave/browser/extensions/brave_component_extension_resource_manager.cc
+index a5011af..393b473 100644
+--- a/src/brave/browser/extensions/brave_component_extension_resource_manager.cc
++++ b/src/brave/browser/extensions/brave_component_extension_resource_manager.cc
+@@ -8,8 +8,8 @@
+ #include "brave/components/brave_extension/grit/brave_extension_generated_map.h"
+ #include "brave/components/brave_extension/grit/brave_extension_resources_map.h"
+ #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
+-#include "brave/components/brave_webtorrent/grit/brave_webtorrent_generated_map.h"
+-#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources_map.h"
++//#include "brave/components/brave_webtorrent/grit/brave_webtorrent_generated_map.h"
++//#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources_map.h"
+ 
+ #if BUILDFLAG(BRAVE_REWARDS_ENABLED)
+ #include "brave/components/brave_rewards/resources/extension/grit/brave_rewards_extension_resources_map.h"
+@@ -37,6 +37,7 @@ BraveComponentExtensionResourceManager() {
+       kBraveRewardsPanelGeneratedSize);
+ #endif
+ 
++/*
+   AddComponentResourceEntries(
+       kBraveWebtorrentResources,
+       kBraveWebtorrentResourcesSize);
+@@ -44,6 +45,7 @@ BraveComponentExtensionResourceManager() {
+   AddComponentResourceEntries(
+       kBraveWebtorrentGenerated,
+       kBraveWebtorrentGeneratedSize);
++*/
+ }
+ 
+ BraveComponentExtensionResourceManager::
+diff --git a/src/brave/browser/extensions/brave_component_loader.cc b/src/brave/browser/extensions/brave_component_loader.cc
+index e3363d3..849f2a7 100644
+--- a/src/brave/browser/extensions/brave_component_loader.cc
++++ b/src/brave/browser/extensions/brave_component_loader.cc
+@@ -19,8 +19,8 @@
+ #include "brave/components/brave_extension/grit/brave_extension.h"
+ #include "brave/components/brave_rewards/browser/buildflags/buildflags.h"
+ #include "brave/components/brave_rewards/common/pref_names.h"
+-#include "brave/components/brave_rewards/resources/extension/grit/brave_rewards_extension_resources.h"
+-#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources.h"
++//#include "brave/components/brave_rewards/resources/extension/grit/brave_rewards_extension_resources.h"
++//#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources.h"
+ #include "brave/browser/extensions/brave_wallet_util.h"
+ #include "chrome/browser/extensions/extension_service.h"
+ #include "chrome/browser/profiles/profile.h"
+@@ -155,7 +155,7 @@ void BraveComponentLoader::AddWebTorrentExtension() {
+     base::FilePath brave_webtorrent_path(FILE_PATH_LITERAL(""));
+     brave_webtorrent_path =
+       brave_webtorrent_path.Append(FILE_PATH_LITERAL("brave_webtorrent"));
+-    Add(IDR_BRAVE_WEBTORRENT, brave_webtorrent_path);
++//    Add(IDR_BRAVE_WEBTORRENT, brave_webtorrent_path);
+   }
+ }
+ 
+diff --git a/src/brave/browser/profiles/brave_profile_impl.cc b/src/brave/browser/profiles/brave_profile_impl.cc
+index 86050a5..73ae5db 100644
+--- a/src/brave/browser/profiles/brave_profile_impl.cc
++++ b/src/brave/browser/profiles/brave_profile_impl.cc
+@@ -31,8 +31,8 @@ BraveProfileImpl::BraveProfileImpl(
+   if (!pref->HasUserSetting()) {
+     // advanced view is defaulted to true for EXISTING users; false for new.
+     // preference needs to be explicitly set to hold its value
+-    const bool default_value = !first_run::IsChromeFirstRun();
+-    GetPrefs()->SetBoolean(kShieldsAdvancedViewEnabled, default_value);
++//    const bool default_value = !first_run::IsChromeFirstRun();
++//    GetPrefs()->SetBoolean(kShieldsAdvancedViewEnabled, default_value);
+   }
+ #endif
+ 
+diff --git a/src/brave/browser/profiles/brave_profile_manager.cc b/src/brave/browser/profiles/brave_profile_manager.cc
+index 0f4f7ac..2a17d36 100644
+--- a/src/brave/browser/profiles/brave_profile_manager.cc
++++ b/src/brave/browser/profiles/brave_profile_manager.cc
+@@ -144,7 +144,7 @@ void BraveProfileManager::DoFinalInitForServices(Profile* profile,
+   if (!do_final_services_init_)
+     return;
+   brave_ads::AdsServiceFactory::GetForProfile(profile);
+-  brave_rewards::RewardsServiceFactory::GetForProfile(profile);
++//  brave_rewards::RewardsServiceFactory::GetForProfile(profile);
+ #if BUILDFLAG(BRAVE_WALLET_ENABLED)
+   BraveWalletServiceFactory::GetForProfile(profile);
+ #endif
+@@ -205,7 +205,7 @@ void BraveProfileManager::OnProfileCreated(Profile* profile,
+ // during the initialization.
+ void BraveProfileManager::SetNonPersonalProfilePrefs(Profile* profile) {
+   PrefService* prefs = profile->GetPrefs();
+-  prefs->SetBoolean(prefs::kSigninAllowed, false);
++//  prefs->SetBoolean(prefs::kSigninAllowed, false);
+   prefs->SetBoolean(bookmarks::prefs::kEditBookmarksEnabled, false);
+   prefs->SetBoolean(bookmarks::prefs::kShowBookmarkBar, false);
+ }
+diff --git a/src/brave/browser/resources/settings/brave_appearance_page/toolbar.html b/src/brave/browser/resources/settings/brave_appearance_page/toolbar.html
+index 3747537..5db2ca0 100644
+--- a/src/brave/browser/resources/settings/brave_appearance_page/toolbar.html
++++ b/src/brave/browser/resources/settings/brave_appearance_page/toolbar.html
+@@ -23,10 +23,12 @@
+       pref="{{prefs.brave.brave_suggested_site_suggestions_enabled}}"
+       label="$i18n{appearanceSettingsUseBraveSuggestedSiteSuggestions}">
+     </settings-toggle-button>
++    <!--
+     <settings-toggle-button pref="{{prefs.brave.hide_brave_rewards_button}}"
+                             label="$i18n{appearanceSettingsHideBraveRewardsButtonLabel}"
+                             sub-label="$i18n{appearanceSettingsHideBraveRewardsButtonDesc}">
+     </settings-toggle-button>
++    -->
+     <settings-toggle-button
+       pref="{{prefs.brave.always_show_bookmark_bar_on_ntp}}"
+       label="$i18n{appearanceSettingsAlwaysShowBookmarkBarOnNTP}"
+diff --git a/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_browser_proxy.js b/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_browser_proxy.js
+index 167c5eb..c79d6b4 100644
+--- a/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_browser_proxy.js
++++ b/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_browser_proxy.js
+@@ -17,6 +17,10 @@ cr.define('settings', function() {
+     isTorManaged() {}
+     getRestartNeeded() {}
+     getWeb3ProviderList() {}
++
++    setTorProxyEnabled(value) {}
++    isTorProxyEnabled() {}
++    setProxyProfile(proxy) {}
+   }
+ 
+   /**
+@@ -55,6 +59,19 @@ cr.define('settings', function() {
+     getWeb3ProviderList() {
+       return new Promise(resolve => chrome.braveWallet.getWeb3ProviderList(resolve))
+     }
++
++    setTorProxyEnabled(value) {
++      chrome.send('setTorProxyEnabled', [value]);
++    }
++    isTorProxyEnabled() {
++      return cr.sendWithPromise('isTorProxyEnabled');
++    }
++    setProxyProfile(proxy) {
++      chrome.send('setProxyProfile', [proxy]);
++    }
++    gettorProxyProfile() {
++      return cr.sendWithPromise('gettorProxyProfile');
++    }
+   }
+ 
+   cr.addSingletonGetter(BraveDefaultExtensionsBrowserProxyImpl);
+diff --git a/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.html b/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.html
+index c5ab2b4..f56490f 100644
+--- a/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.html
++++ b/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.html
+@@ -64,8 +64,15 @@
+         font-size: .875rem;
+         padding: 14px 38px;
+       }
++      cr-input {
++        --cr-input-error-display: none;
++      }
++      #torProxyEnabled {
++        --cr-section_-_border-top: 0;
++      }
+     </style>
+ 
++    <!--
+     <div class="settings-box first">
+       <div class="start">$i18n{braveWeb3ProviderDesc}</div>
+       <settings-dropdown-menu id="braveWeb3ProvidersType"
+@@ -77,6 +84,7 @@
+         pref="{{prefs.brave.wallet.load_on_startup}}"
+         label="$i18n{loadCryptoWalletsOnStartupDesc}">
+     </settings-toggle-button>
++    -->
+     <settings-toggle-button id="hangoutsEnabled"
+         pref="{{prefs.brave.hangouts_enabled}}"
+         label="Hangouts"
+@@ -104,13 +112,24 @@
+         disabled="[[disableTorOption_]]"
+         on-settings-boolean-control-change="onTorEnabledChange_">
+     </settings-toggle-button>
++    <div class="settings-box">
++        <settings-toggle-button id="torProxyEnabled" pref="" checked="[[torProxyEnabled_]]" label="Tor Socket5 Proxy" disabled="[[!torEnabled_]]" 
++		on-settings-boolean-control-change="onTorProxyEnabledChange_"></settings-toggle-button>
++        <div class="label" style="margin:20px;">Socket5 IP:PORT</div>
++        <cr-input id="torSocket5ProxyString" value="[[torProxyProfile_]]" pattern="\d+\.\d+\.\d+\.\d+:\d{1,5}"
++          on-change="onProxyProfileChanged_" readonly="[[!torEnabled_]]"
++          maxlength="20" auto-validate required spellcheck="false">
++        </cr-input>
++    </div>
+     </if>
++    <!--
+     <settings-toggle-button id="webTorrentEnabled"
+         pref="{{prefs.brave.webtorrent_enabled}}"
+         label="WebTorrent"
+         sub-label="$i18n{webTorrentEnabledDesc}"
+         on-settings-boolean-control-change="onWebTorrentEnabledChange_">
+     </settings-toggle-button>
++    -->
+     <settings-toggle-button
+         pref="{{prefs.brave.ask_widevine_install}}"
+         label="Widevine"
+diff --git a/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.js b/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.js
+index b642332..33c3b0e 100644
+--- a/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.js
++++ b/src/brave/browser/resources/settings/brave_default_extensions_page/brave_default_extensions_page.js
+@@ -20,6 +20,8 @@ Polymer({
+     showRestartToast_: Boolean,
+     torEnabled_: Boolean,
+     disableTorOption_: Boolean,
++    torProxyEnabled_: Boolean,
++    torProxyProfile_: String,
+   },
+ 
+   /** @private {?settings.BraveDefaultExtensionsBrowserProxy} */
+@@ -40,6 +42,7 @@ Polymer({
+     this.openKeyboardShortcutsPage_ = this.openKeyboardShortcutsPage_.bind(this)
+     this.restartBrowser_ = this.restartBrowser_.bind(this)
+     this.onTorEnabledChange_ = this.onTorEnabledChange_.bind(this)
++    this.onTorProxyEnabledChange_ = this.onTorProxyEnabledChange_.bind(this)
+ 
+     this.addWebUIListener('brave-needs-restart-changed', (needsRestart) => {
+       this.showRestartToast_ = needsRestart
+@@ -57,8 +60,18 @@ Polymer({
+     this.browserProxy_.isTorManaged().then(managed => {
+       this.disableTorOption_ = managed
+     })
+-    this.browserProxy_.getWeb3ProviderList().then(list => {
+-      this.braveWeb3Providers_ = JSON.parse(list)
++//    this.browserProxy_.getWeb3ProviderList().then(list => {
++//      this.braveWeb3Providers_ = JSON.parse(list)
++//    });
++
++    this.addWebUIListener('torproxy-enabled-changed', (enabled) => {
++      this.torProxyEnabled_ = enabled
++    })
++    this.browserProxy_.isTorProxyEnabled().then(enabled => {
++      this.torProxyEnabled_ = enabled
++    })
++    this.browserProxy_.gettorProxyProfile().then(profile => {
++      this.torProxyProfile_ = profile
+     });
+   },
+ 
+@@ -89,6 +102,17 @@ Polymer({
+   onTorEnabledChange_: function() {
+     this.browserProxy_.setTorEnabled(this.$.torEnabled.checked);
+   },
++  
++  onTorProxyEnabledChange_: function() {
++    this.browserProxy_.setTorProxyEnabled(this.$.torProxyEnabled.checked);
++  },
++
++  onProxyProfileChanged_: function(event) {
++    if (event.target.invalid) {
++      return;
++    }
++    this.browserProxy_.setProxyProfile(event.target.value);
++  },
+ 
+   openExtensionsPage_: function() {
+     window.open("chrome://extensions", "_self");
+diff --git a/src/brave/browser/resources/settings/brave_new_tab_page/brave_new_tab_page.html b/src/brave/browser/resources/settings/brave_new_tab_page/brave_new_tab_page.html
+index 58a358a..c694487 100644
+--- a/src/brave/browser/resources/settings/brave_new_tab_page/brave_new_tab_page.html
++++ b/src/brave/browser/resources/settings/brave_new_tab_page/brave_new_tab_page.html
+@@ -35,12 +35,14 @@
+                 pref="{{prefs.brave.new_tab_page.show_background_image}}"
+                 label="$i18n{braveNewTabBackgroundImages}">
+             </settings-toggle-button>
++            <!--
+             <settings-toggle-button
+                 class="nested-section borderless"
+                 pref="{{prefs.brave.new_tab_page.show_branded_background_image}}"
+                 disabled="{{!prefs.brave.new_tab_page.show_background_image.value}}"
+                 label="$i18n{braveNewTabSponsoredImages}">
+             </settings-toggle-button>
++            -->
+         </template>
+         </div>
+       </div>
+@@ -50,6 +52,7 @@
+           pref="{{prefs.brave.new_tab_page.show_stats}}"
+           label="$i18n{braveNewTabStats}">
+       </settings-toggle-button>
++      <!--
+       <settings-toggle-button
+           pref="{{prefs.brave.new_tab_page.show_rewards}}"
+           label="$i18n{braveNewTabBraveRewards}">
+@@ -66,6 +69,7 @@
+             label="$i18n{braveNewTabBinance}">
+         </settings-toggle-button>
+       </template>
++      -->
+       <settings-toggle-button
+           pref="{{prefs.brave.new_tab_page.show_top_sites}}"
+           label="$i18n{braveNewTabTopSites}">
+diff --git a/src/brave/browser/tor/tor_profile_service.cc b/src/brave/browser/tor/tor_profile_service.cc
+index 182954b..9f942da 100644
+--- a/src/brave/browser/tor/tor_profile_service.cc
++++ b/src/brave/browser/tor/tor_profile_service.cc
+@@ -57,6 +57,9 @@ void TorProfileService::RegisterLocalStatePrefs(PrefRegistrySimple* registry) {
+       std::string(kTorProxyScheme) + std::string(kTorProxyAddress) + ":" + port;
+   registry->RegisterStringPref(prefs::kTorProxyString, tor_proxy_uri);
+   registry->RegisterBooleanPref(prefs::kTorDisabled, false);
++  const std::string tor_proxyprofile_uri = "127.0.0.1:10808";
++  registry->RegisterStringPref(prefs::kTorProxyProfile, tor_proxyprofile_uri);
++  registry->RegisterBooleanPref(prefs::kTorProxyDisabled, true);
+ }
+ 
+ // static
+@@ -69,6 +72,26 @@ void TorProfileService::SetTorDisabled(bool disabled) {
+   g_browser_process->local_state()->SetBoolean(prefs::kTorDisabled, disabled);
+ }
+ 
++// static
++bool TorProfileService::IsTorProxyDisabled() {
++  return g_browser_process->local_state()->GetBoolean(prefs::kTorProxyDisabled);
++}
++
++// static
++void TorProfileService::SetTorProxyDisabled(bool disabled) {
++  g_browser_process->local_state()->SetBoolean(prefs::kTorProxyDisabled, disabled);
++}
++
++// static
++std::string TorProfileService::GetTorProxyProfile() {
++  return g_browser_process->local_state()->GetString(prefs::kTorProxyProfile);
++}
++
++// static
++void TorProfileService::SetProxyProfile(const std::string& proxy_profile) {
++  g_browser_process->local_state()->SetString(prefs::kTorProxyProfile, proxy_profile);
++}
++
+ std::string TorProfileService::GetTorProxyURI() {
+   return g_browser_process->local_state()->GetString(prefs::kTorProxyString);
+ }
+diff --git a/src/brave/browser/tor/tor_profile_service.h b/src/brave/browser/tor/tor_profile_service.h
+index 8b98519..aca74b0 100644
+--- a/src/brave/browser/tor/tor_profile_service.h
++++ b/src/brave/browser/tor/tor_profile_service.h
+@@ -43,6 +43,10 @@ class TorProfileService : public KeyedService {
+   static void SetTorDisabled(bool disabled);
+   static bool IsTorDisabled();
+ 
++  static void SetTorProxyDisabled(bool disabled);
++  static bool IsTorProxyDisabled();
++  static void SetProxyProfile(const std::string& proxy_profile);
++  static std::string GetTorProxyProfile();
+   virtual void SetNewTorCircuit(content::WebContents* web_contents) = 0;
+   virtual std::unique_ptr<net::ProxyConfigService>
+       CreateProxyConfigService() = 0;
+diff --git a/src/brave/browser/tor/tor_profile_service_impl.cc b/src/brave/browser/tor/tor_profile_service_impl.cc
+index 8763446..7048572 100644
+--- a/src/brave/browser/tor/tor_profile_service_impl.cc
++++ b/src/brave/browser/tor/tor_profile_service_impl.cc
+@@ -150,7 +150,7 @@ void TorProfileServiceImpl::OnExecutableReady(const base::FilePath& path) {
+ }
+ 
+ void TorProfileServiceImpl::LaunchTor() {
+-  tor::TorConfig config(GetTorExecutablePath(), GetTorProxyURI());
++  tor::TorConfig config(GetTorExecutablePath(), GetTorProxyURI(), IsTorProxyDisabled(), GetTorProxyProfile());
+   tor_launcher_factory_->LaunchTorProcess(config);
+ }
+ 
+diff --git a/src/brave/browser/translate/buildflags/buildflags.gni b/src/brave/browser/translate/buildflags/buildflags.gni
+index 54d1119..ed10c6a 100644
+--- a/src/brave/browser/translate/buildflags/buildflags.gni
++++ b/src/brave/browser/translate/buildflags/buildflags.gni
+@@ -3,7 +3,8 @@ import("//build/config/features.gni")
+ import("//extensions/buildflags/buildflags.gni")
+ 
+ declare_args() {
+-  enable_brave_translate_go = false
++  #enable_brave_translate_go = false
++  enable_brave_translate_go = true
+ }
+ 
+ declare_args() {
+diff --git a/src/brave/browser/ui/views/brave_actions/brave_actions_container.h b/src/brave/browser/ui/views/brave_actions/brave_actions_container.h
+index 5985fa0..67d8d91 100644
+--- a/src/brave/browser/ui/views/brave_actions/brave_actions_container.h
++++ b/src/brave/browser/ui/views/brave_actions/brave_actions_container.h
+@@ -45,8 +45,9 @@ class BraveActionsContainer : public views::View,
+                               public extensions::BraveActionAPI::Observer,
+                               public extensions::ExtensionActionAPI::Observer,
+                               public extensions::ExtensionRegistryObserver,
+-                              public ToolbarActionView::Delegate,
++                              public ToolbarActionView::Delegate
+ #if BUILDFLAG(BRAVE_REWARDS_ENABLED)
++                              ,
+                               public BraveRewardsActionStubView::Delegate
+ #endif
+                               {
+diff --git a/src/brave/browser/ui/webui/brave_new_tab_message_handler.cc b/src/brave/browser/ui/webui/brave_new_tab_message_handler.cc
+index db3e52f..9b2d6e1 100644
+--- a/src/brave/browser/ui/webui/brave_new_tab_message_handler.cc
++++ b/src/brave/browser/ui/webui/brave_new_tab_message_handler.cc
+@@ -120,7 +120,7 @@ BraveNewTabMessageHandler* BraveNewTabMessageHandler::Create(
+   // in which case we would not show "opt out" toggle.
+   bool is_ads_supported_locale_ = true;
+   if (!ads_service_) {
+-    LOG(ERROR) << "Ads service is not initialized!";
++//    LOG(ERROR) << "Ads service is not initialized!";
+   } else {
+     is_ads_supported_locale_ = ads_service_->IsSupportedLocale();
+   }
+diff --git a/src/brave/browser/ui/webui/brave_webui_source.cc b/src/brave/browser/ui/webui/brave_webui_source.cc
+index 561ed00..4012f22 100644
+--- a/src/brave/browser/ui/webui/brave_webui_source.cc
++++ b/src/brave/browser/ui/webui/brave_webui_source.cc
+@@ -230,6 +230,7 @@ void CustomizeWebUIHTMLSource(const std::string &name,
+         { "rewardsWidgetBrandedNotificationTitle", IDS_REWARDS_WIDGET_BRANDED_NOTIFICATION_TITLE },      // NOLINT
+         { "rewardsWidgetBrandedNotificationDescription", IDS_REWARDS_WIDGET_BRANDED_NOTIFICATION_DESCRIPTION }, // NOLINT
+         { "rewardsWidgetBrandedNotificationHideAction", IDS_REWARDS_WIDGET_BRANDED_NOTIFICATION_HIDE_ACTION }, // NOLINT
++        { "title", IDS_BRAVE_NEW_TAB_TITLE },
+         // Together Widget
+         { "togetherWidgetTitle", IDS_TOGETHER_WIDGET_TITLE },
+         { "togetherWidgetWelcomeTitle", IDS_TOGETHER_WIDGET_WELCOME_TITLE },
+diff --git a/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.cc b/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.cc
+index 22b3910..0dbbcfa 100644
+--- a/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.cc
++++ b/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.cc
+@@ -14,7 +14,7 @@
+ #include "brave/browser/tor/buildflags.h"
+ #include "brave/common/extensions/extension_constants.h"
+ #include "brave/common/pref_names.h"
+-#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources.h"
++//#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources.h"
+ #include "chrome/browser/about_flags.h"
+ #include "chrome/browser/extensions/component_loader.h"
+ #include "chrome/browser/extensions/extension_service.h"
+@@ -92,6 +92,24 @@ void BraveDefaultExtensionsHandler::RegisterMessages() {
+       "isTorManaged",
+       base::BindRepeating(&BraveDefaultExtensionsHandler::IsTorManaged,
+                           base::Unretained(this)));
++  
++  web_ui()->RegisterMessageCallback(
++      "setTorProxyEnabled",
++      base::BindRepeating(
++          &BraveDefaultExtensionsHandler::SetTorProxyEnabled,
++          base::Unretained(this)));
++  web_ui()->RegisterMessageCallback(
++      "isTorProxyEnabled",
++      base::BindRepeating(&BraveDefaultExtensionsHandler::IsTorProxyEnabled,
++                          base::Unretained(this)));
++  web_ui()->RegisterMessageCallback(
++      "setProxyProfile",
++      base::BindRepeating(&BraveDefaultExtensionsHandler::SetProxyProfile,
++                          base::Unretained(this)));
++  web_ui()->RegisterMessageCallback(
++      "gettorProxyProfile",
++      base::BindRepeating(&BraveDefaultExtensionsHandler::GetTorProxyProfile,
++                          base::Unretained(this)));
+ #endif
+ 
+   // Can't call this in ctor because it needs to access web_ui().
+@@ -115,6 +133,10 @@ void BraveDefaultExtensionsHandler::InitializePrefCallbacks() {
+       tor::prefs::kTorDisabled,
+       base::Bind(&BraveDefaultExtensionsHandler::OnTorEnabledChanged,
+                  base::Unretained(this)));
++  local_state_change_registrar_.Add(
++      tor::prefs::kTorProxyDisabled,
++      base::Bind(&BraveDefaultExtensionsHandler::OnTorProxyEnabledChanged,
++                 base::Unretained(this)));
+ #endif
+ }
+ 
+@@ -155,7 +177,7 @@ void BraveDefaultExtensionsHandler::SetWebTorrentEnabled(
+       base::FilePath brave_webtorrent_path(FILE_PATH_LITERAL(""));
+       brave_webtorrent_path =
+           brave_webtorrent_path.Append(FILE_PATH_LITERAL("brave_webtorrent"));
+-      loader->Add(IDR_BRAVE_WEBTORRENT, brave_webtorrent_path);
++//      loader->Add(IDR_BRAVE_WEBTORRENT, brave_webtorrent_path);
+     }
+     service->EnableExtension(brave_webtorrent_extension_id);
+   } else {
+@@ -264,6 +286,53 @@ void BraveDefaultExtensionsHandler::IsTorManaged(
+   AllowJavascript();
+   ResolveJavascriptCallback(args->GetList()[0], base::Value(is_managed));
+ }
++
++void BraveDefaultExtensionsHandler::OnTorProxyEnabledChanged() {
++  if (IsJavascriptAllowed()) {
++    FireWebUIListener(
++        "torproxy-enabled-changed",
++        base::Value(!tor::TorProfileService::IsTorProxyDisabled()));
++  }
++}
++
++void BraveDefaultExtensionsHandler::SetTorProxyEnabled(const base::ListValue* args) {
++  CHECK_EQ(args->GetSize(), 1U);
++  bool enabled;
++  args->GetBoolean(0, &enabled);
++  AllowJavascript();
++  tor::TorProfileService::SetTorProxyDisabled(!enabled);
++}
++
++void BraveDefaultExtensionsHandler::IsTorProxyEnabled(
++    const base::ListValue* args) {
++  CHECK_EQ(args->GetSize(), 1U);
++  AllowJavascript();
++  ResolveJavascriptCallback(
++      args->GetList()[0],
++      base::Value(!tor::TorProfileService::IsTorProxyDisabled()));
++}
++
++void BraveDefaultExtensionsHandler::SetProxyProfile(const base::ListValue* args) {
++  DCHECK(args);
++  DCHECK_EQ(1u, args->GetSize());
++  
++  std::string new_profile_name;
++  CHECK(args->GetString(0, &new_profile_name));
++
++  //base::TrimWhitespace(new_profile_name, base::TRIM_ALL, &new_profile_name);
++  CHECK(!new_profile_name.empty());
++  
++  tor::TorProfileService::SetProxyProfile(new_profile_name);
++}
++
++void BraveDefaultExtensionsHandler::GetTorProxyProfile(
++    const base::ListValue* args) {
++  CHECK_EQ(args->GetSize(), 1U);
++
++  AllowJavascript();
++  ResolveJavascriptCallback(args->GetList()[0],
++                            base::Value(tor::TorProfileService::GetTorProxyProfile()));
++}
+ #endif
+ 
+ void BraveDefaultExtensionsHandler::SetIPFSCompanionEnabled(
+diff --git a/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.h b/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.h
+index 33f0b7c..56de81a 100644
+--- a/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.h
++++ b/src/brave/browser/ui/webui/settings/brave_default_extensions_handler.h
+@@ -38,6 +38,12 @@ class BraveDefaultExtensionsHandler : public settings::SettingsPageUIHandler {
+   void IsTorEnabled(const base::ListValue* args);
+   void OnTorEnabledChanged();
+   void IsTorManaged(const base::ListValue* args);
++  
++  void SetTorProxyEnabled(const base::ListValue* args);
++  void IsTorProxyEnabled(const base::ListValue* args);
++  void OnTorProxyEnabledChanged();
++  void SetProxyProfile(const base::ListValue* args);
++  void GetTorProxyProfile(const base::ListValue* args);
+ #endif
+ 
+   void InitializePrefCallbacks();
+diff --git a/src/brave/browser/update_util.cc b/src/brave/browser/update_util.cc
+index d02be27..cd58dfb 100644
+--- a/src/brave/browser/update_util.cc
++++ b/src/brave/browser/update_util.cc
+@@ -10,12 +10,15 @@
+ namespace brave {
+ 
+ bool UpdateEnabled() {
++  return false;
++/*
+ #if defined(OFFICIAL_BUILD)
+   return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+       switches::kDisableBraveUpdate);
+ #else
+   return false;
+ #endif
++*/
+ }
+ 
+ }  //namespace brave
+diff --git a/src/brave/chromium_src/chrome/browser/extensions/component_extensions_whitelist/whitelist.cc b/src/brave/chromium_src/chrome/browser/extensions/component_extensions_whitelist/whitelist.cc
+index 29c8310..80d824e 100644
+--- a/src/brave/chromium_src/chrome/browser/extensions/component_extensions_whitelist/whitelist.cc
++++ b/src/brave/chromium_src/chrome/browser/extensions/component_extensions_whitelist/whitelist.cc
+@@ -11,8 +11,8 @@
+ #include "brave/common/extensions/extension_constants.h"
+ #include "brave/components/brave_extension/grit/brave_extension.h"
+ #include "components/grit/brave_components_resources.h"
+-#include "brave/components/brave_rewards/resources/extension/grit/brave_rewards_extension_resources.h"
+-#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources.h"
++//#include "brave/components/brave_rewards/resources/extension/grit/brave_rewards_extension_resources.h"
++//#include "brave/components/brave_webtorrent/grit/brave_webtorrent_resources.h"
+ 
+ namespace extensions {
+ 
+@@ -36,8 +36,8 @@ namespace extensions {
+     switch (manifest_resource_id) {
+       // Please keep the list in alphabetical order.
+       case IDR_BRAVE_EXTENSION:
+-      case IDR_BRAVE_REWARDS:
+-      case IDR_BRAVE_WEBTORRENT:
++//      case IDR_BRAVE_REWARDS:
++//      case IDR_BRAVE_WEBTORRENT:
+         return true;
+     }
+ 
+diff --git a/src/brave/chromium_src/chrome/browser/profiles/pref_service_builder_utils.cc b/src/brave/chromium_src/chrome/browser/profiles/pref_service_builder_utils.cc
+index a55d3c7..2e106b3 100644
+--- a/src/brave/chromium_src/chrome/browser/profiles/pref_service_builder_utils.cc
++++ b/src/brave/chromium_src/chrome/browser/profiles/pref_service_builder_utils.cc
+@@ -44,8 +44,8 @@ void RegisterProfilePrefs(bool is_signin_profile,
+   // Make sure sign into Brave is not enabled
+   // The older kSigninAllowed is deprecated and only in use in Android until
+   // C71.
+-  registry->SetDefaultPrefValue(prefs::kSigninAllowedOnNextStartup,
+-                                base::Value(false));
++//  registry->SetDefaultPrefValue(prefs::kSigninAllowedOnNextStartup,
++//                                base::Value(false));
+ 
+ #if defined(OS_LINUX)
+   // Use brave theme by default instead of gtk theme.
+diff --git a/src/brave/chromium_src/components/sync/driver/profile_sync_service.cc b/src/brave/chromium_src/components/sync/driver/profile_sync_service.cc
+index 3294af7..ed1d74f 100644
+--- a/src/brave/chromium_src/components/sync/driver/profile_sync_service.cc
++++ b/src/brave/chromium_src/components/sync/driver/profile_sync_service.cc
+@@ -24,15 +24,16 @@
+ #define BRAVE_D_PROFILE_SYNC_SERVICE \
+   brave_sync_prefs_change_registrar_.RemoveAll();
+ 
+-#define SyncAuthManager BraveSyncAuthManager
++//#define SyncAuthManager BraveSyncAuthManager
+ 
+ #include "../../../../../components/sync/driver/profile_sync_service.cc"
+ 
+ #undef BRAVE_PROFILE_SYNC_SERVICE
+ #undef BRAVE_D_PROFILE_SYNC_SERVICE
+-#undef SyncAuthManager
++//#undef SyncAuthManager
+ 
+ namespace syncer {
++/*
+ void ProfileSyncService::OnBraveSyncPrefsChanged(const std::string& path) {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   if (path == brave_sync::Prefs::GetSeedPath()) {
+@@ -46,4 +47,5 @@ void ProfileSyncService::OnBraveSyncPrefsChanged(const std::string& path) {
+     }
+   }
+ }
++*/
+ }  // namespace syncer
+diff --git a/src/brave/common/extensions/api/BUILD.gn b/src/brave/common/extensions/api/BUILD.gn
+index 454ee67..3d6f0d0 100644
+--- a/src/brave/common/extensions/api/BUILD.gn
++++ b/src/brave/common/extensions/api/BUILD.gn
+@@ -56,9 +56,9 @@ json_features("behavior_features") {
+ 
+ brave_extensions_api_schema_sources = [
+   "brave_shields.json",
+-  "brave_rewards.json",
++#  "brave_rewards.json",
+   "brave_theme.json",
+-  "rewards_notifications.json",
++#  "rewards_notifications.json",
+ ]
+ 
+ if (brave_wallet_enabled) {
+diff --git a/src/brave/common/tor/pref_names.cc b/src/brave/common/tor/pref_names.cc
+index 55872cf..209ae92 100644
+--- a/src/brave/common/tor/pref_names.cc
++++ b/src/brave/common/tor/pref_names.cc
+@@ -10,6 +10,8 @@ namespace prefs {
+ 
+ const char kTorProxyString[] = "tor.tor_proxy_string";
+ const char kTorDisabled[] = "tor.tor_disabled";
++const char kTorProxyProfile[] = "tor.tor_proxy_profile";
++const char kTorProxyDisabled[] = "tor.tor_proxy_disabled";
+ 
+ }  // namespace prefs
+ }  // namespace tor
+diff --git a/src/brave/common/tor/pref_names.h b/src/brave/common/tor/pref_names.h
+index 571de27..172083a 100644
+--- a/src/brave/common/tor/pref_names.h
++++ b/src/brave/common/tor/pref_names.h
+@@ -11,6 +11,8 @@ namespace prefs {
+ 
+ extern const char kTorProxyString[];
+ extern const char kTorDisabled[];
++extern const char kTorProxyProfile[];
++extern const char kTorProxyDisabled[];
+ 
+ }  // namespace prefs
+ }  // namespace tor
+diff --git a/src/brave/common/tor/tor_common.cc b/src/brave/common/tor/tor_common.cc
+index 908de7a..8d7bf8b 100644
+--- a/src/brave/common/tor/tor_common.cc
++++ b/src/brave/common/tor/tor_common.cc
+@@ -18,9 +18,13 @@ namespace tor {
+ TorConfig::TorConfig() {}
+ 
+ TorConfig::TorConfig(const base::FilePath& binary_path,
+-                     const std::string& proxy_string)
++                     const std::string& proxy_string,
++                     const bool& isproxyprofile_disable,
++                     const std::string& proxyprofile_string)
+   : binary_path_(binary_path),
+     proxy_string_(proxy_string) {
++    isproxyprofile_disable_ = isproxyprofile_disable;
++    proxyprofile_string_ = proxyprofile_string;
+   if (proxy_string.length()) {
+     url::Parsed url;
+     url::ParseStandardURL(
+diff --git a/src/brave/common/tor/tor_common.h b/src/brave/common/tor/tor_common.h
+index c65091e..5f8e831 100644
+--- a/src/brave/common/tor/tor_common.h
++++ b/src/brave/common/tor/tor_common.h
+@@ -16,13 +16,18 @@ class TorConfig {
+  public:
+   TorConfig();
+   explicit TorConfig(const base::FilePath& binary_path,
+-                     const std::string& proxy_config);
++                     const std::string& proxy_config,
++                     const bool& isproxyprofile_disable,
++                     const std::string& proxyprofile_string
++  );
+   TorConfig(const TorConfig& that);
+   ~TorConfig();
+ 
+   bool empty() const;
+   const base::FilePath& binary_path() const { return binary_path_; }
+   const std::string& proxy_string() const { return proxy_string_; }
++  const bool& isproxyprofile_disable() const { return isproxyprofile_disable_; }
++  const std::string& proxyprofile_string() const { return proxyprofile_string_; }
+   const std::string& proxy_host() const { return proxy_host_; }
+   const std::string& proxy_port() const { return proxy_port_; }
+   const base::FilePath& tor_data_path() const { return tor_data_path_; }
+@@ -31,6 +36,8 @@ class TorConfig {
+  private:
+   base::FilePath binary_path_;
+   std::string proxy_string_;
++  bool isproxyprofile_disable_;
++  std::string proxyprofile_string_;
+   std::string proxy_host_;
+   std::string proxy_port_;
+   base::FilePath tor_data_path_;
+diff --git a/src/brave/common/tor/tor_config_struct_traits.cc b/src/brave/common/tor/tor_config_struct_traits.cc
+index d53920f..88fccab 100644
+--- a/src/brave/common/tor/tor_config_struct_traits.cc
++++ b/src/brave/common/tor/tor_config_struct_traits.cc
+@@ -15,10 +15,11 @@ bool StructTraits<tor::mojom::TorConfigDataView,
+          tor::TorConfig* out) {
+     base::FilePath binary_path;
+     std::string proxy_string;
+-    if (!in.ReadBinaryPath(&binary_path) || !in.ReadProxyString(&proxy_string))
++    std::string proxyprofile_string;
++    if (!in.ReadBinaryPath(&binary_path) || !in.ReadProxyString(&proxy_string)|| !in.ReadProxyprofileString(&proxyprofile_string))
+       return false;
+ 
+-    *out = tor::TorConfig(binary_path, proxy_string);
++    *out = tor::TorConfig(binary_path, proxy_string, in.isproxyprofile_disable(), proxyprofile_string);
+     if (out->empty())
+       return false;
+     return true;
+diff --git a/src/brave/common/tor/tor_config_struct_traits.h b/src/brave/common/tor/tor_config_struct_traits.h
+index 1ad85ec..691dcbf 100644
+--- a/src/brave/common/tor/tor_config_struct_traits.h
++++ b/src/brave/common/tor/tor_config_struct_traits.h
+@@ -25,6 +25,14 @@ struct StructTraits<tor::mojom::TorConfigDataView,
+     return config.proxy_string();
+   }
+ 
++  static bool isproxyprofile_disable(const tor::TorConfig& config) {
++    return config.isproxyprofile_disable();
++  }
++  
++  static std::string proxyprofile_string(const tor::TorConfig& config) {
++    return config.proxyprofile_string();
++  }
++
+   static std::string proxy_host(const tor::TorConfig& config) {
+     return config.proxy_host();
+   }
+diff --git a/src/brave/components/binance/browser/buildflags/buildflags.gni b/src/brave/components/binance/browser/buildflags/buildflags.gni
+index c08c91b..7632431 100644
+--- a/src/brave/components/binance/browser/buildflags/buildflags.gni
++++ b/src/brave/components/binance/browser/buildflags/buildflags.gni
+@@ -1,5 +1,6 @@
+ import("//build/config/features.gni")
+ 
+ declare_args() {
+-  binance_enabled = is_mac || is_linux || is_win
++  #binance_enabled = is_mac || is_linux || is_win
++  binance_enabled = false
+ }
+diff --git a/src/brave/components/brave_ads/browser/buildflags/buildflags.gni b/src/brave/components/brave_ads/browser/buildflags/buildflags.gni
+index 9fd59d7..24c432b 100644
+--- a/src/brave/components/brave_ads/browser/buildflags/buildflags.gni
++++ b/src/brave/components/brave_ads/browser/buildflags/buildflags.gni
+@@ -2,5 +2,6 @@ import("//brave/components/brave_rewards/browser/buildflags/buildflags.gni")
+ import("//build/config/features.gni")
+ 
+ declare_args() {
+-  brave_ads_enabled = brave_rewards_enabled && (is_mac || is_linux || is_win || is_android)
++  #brave_ads_enabled = brave_rewards_enabled && (is_mac || is_linux || is_win || is_android)
++  brave_ads_enabled = false
+ }
+diff --git a/src/brave/components/brave_extension/extension/brave_extension/_locales/zh_CN/messages.json b/src/brave/components/brave_extension/extension/brave_extension/_locales/zh_CN/messages.json
+index cfca3dc..6f07cf7 100644
+--- a/src/brave/components/brave_extension/extension/brave_extension/_locales/zh_CN/messages.json
++++ b/src/brave/components/brave_extension/extension/brave_extension/_locales/zh_CN/messages.json
+@@ -202,5 +202,17 @@
+   "learnMore": {
+     "message": "了解更多",
+     "description": "Message inviting the user to learn more about Shields"
++  },
++  "standardFingerprinting": {
++    "message": "指纹识别尝试拦截 (标准)",
++    "description": "Message for the option in the fingerprinting select field to block all 3rd party recognition attempts"
++  },
++  "strictFingerprinting": {
++    "message": "指纹识别尝试拦截 (严格，可能会破坏站点)",
++    "description": "Message for the option in the fingerprinting select field to block all fingerprinting attempts"
++  },
++  "allowAllFingerprinting": {
++    "message": "允许所有指纹识别尝试",
++    "description": "Message for the option in the fingerprinting select field to allow all fingerprinting attempts"
+   }
+ }
+diff --git a/src/brave/components/brave_new_tab_ui/apiEventsToStore.ts b/src/brave/components/brave_new_tab_ui/apiEventsToStore.ts
+index 7c83758..d54259e 100644
+--- a/src/brave/components/brave_new_tab_ui/apiEventsToStore.ts
++++ b/src/brave/components/brave_new_tab_ui/apiEventsToStore.ts
+@@ -7,7 +7,7 @@ import getActions from './api/getActions'
+ import * as preferencesAPI from './api/preferences'
+ import * as statsAPI from './api/stats'
+ import * as privateTabDataAPI from './api/privateTabData'
+-import { getInitialData, getRewardsInitialData, getRewardsPreInitialData, getBinanceBlackList } from './api/initialData'
++import { getInitialData } from './api/initialData'
+ 
+ async function updatePreferences (prefData: preferencesAPI.Preferences) {
+   getActions().preferencesUpdated(prefData)
+@@ -21,11 +21,13 @@ async function updatePrivateTabData (data: privateTabDataAPI.PrivateTabData) {
+   getActions().privateTabDataUpdated(data)
+ }
+ 
++/*
+ function onRewardsToggled (prefData: preferencesAPI.Preferences): void {
+   if (prefData.showRewards) {
+     rewardsInitData()
+   }
+ }
++*/
+ 
+ // Not marked as async so we don't return a promise
+ // and confuse callers
+@@ -33,17 +35,19 @@ export function wireApiEventsToStore () {
+   // Get initial data and dispatch to store
+   getInitialData()
+   .then((initialData) => {
++/*
+     if (initialData.preferences.showRewards) {
+       rewardsInitData()
+       setRewardsFetchInterval()
+     }
+     binanceInitData()
++*/
+     getActions().setInitialData(initialData)
+     getActions().setFirstRenderGridSitesData(initialData)
+     // Listen for API changes and dispatch to store
+     statsAPI.addChangeListener(updateStats)
+     preferencesAPI.addChangeListener(updatePreferences)
+-    preferencesAPI.addChangeListener(onRewardsToggled)
++//    preferencesAPI.addChangeListener(onRewardsToggled)
+     privateTabDataAPI.addChangeListener(updatePrivateTabData)
+   })
+   .catch(e => {
+@@ -51,6 +55,7 @@ export function wireApiEventsToStore () {
+   })
+ }
+ 
++/*
+ export function rewardsInitData () {
+   getRewardsPreInitialData()
+   .then((preInitialRewardsData) => {
+@@ -122,3 +127,4 @@ chrome.braveRewards.onPromotions.addListener((result: number, promotions: NewTab
+ chrome.braveRewards.onPromotionFinish.addListener((result: number, promotion: NewTab.Promotion) => {
+   getActions().onPromotionFinish(result, promotion)
+ })
++*/
+\ No newline at end of file
+diff --git a/src/brave/components/brave_new_tab_ui/brave_new_tab.html b/src/brave/components/brave_new_tab_ui/brave_new_tab.html
+index cb83b2e..8ece05c 100644
+--- a/src/brave/components/brave_new_tab_ui/brave_new_tab.html
++++ b/src/brave/components/brave_new_tab_ui/brave_new_tab.html
+@@ -3,7 +3,7 @@
+ <head>
+ <meta charset="utf-8">
+ <meta name="viewport" content="width=device-width">
+-<title>New Tab</title>
++<title>$i18n{title}</title>
+ <link rel="stylesheet" href="chrome://resources/css/text_defaults.css">
+ <link rel="import" href="chrome://resources/html/cr.html">
+ <script src="chrome://resources/js/cr.js"></script>
+diff --git a/src/brave/components/brave_new_tab_ui/components/default/index.ts b/src/brave/components/brave_new_tab_ui/components/default/index.ts
+index 547e86b..b3a2021 100644
+--- a/src/brave/components/brave_new_tab_ui/components/default/index.ts
++++ b/src/brave/components/brave_new_tab_ui/components/default/index.ts
+@@ -8,9 +8,9 @@ export * from './settings'
+ import { ListWidget, Tile, TileActionsContainer, TileAction, TileFavicon } from './gridSites'
+ import { SiteRemovalNotification, SiteRemovalText, SiteRemovalAction } from './notification'
+ import { ClockWidget } from './clock'
+-import { RewardsWidget } from './rewards'
+-import { BinanceWidget } from './binance'
+-import { TogetherWidget } from './together'
++//import { RewardsWidget } from './rewards'
++//import { BinanceWidget } from './binance'
++//import { TogetherWidget } from './together'
+ import createWidget from './widget'
+ 
+ export * from './page'
+@@ -27,8 +27,8 @@ export {
+   SiteRemovalText,
+   SiteRemovalAction,
+   ClockWidget,
+-  RewardsWidget,
+-  BinanceWidget,
+-  TogetherWidget,
++//  RewardsWidget,
++//  BinanceWidget,
++//  TogetherWidget,
+   createWidget
+ }
+diff --git a/src/brave/components/brave_new_tab_ui/components/default/page/index.ts b/src/brave/components/brave_new_tab_ui/components/default/page/index.ts
+index 4aa4343..4995c65 100644
+--- a/src/brave/components/brave_new_tab_ui/components/default/page/index.ts
++++ b/src/brave/components/brave_new_tab_ui/components/default/page/index.ts
+@@ -16,18 +16,18 @@ const singleColumnSmallViewport = css`
+ interface PageProps {
+   showClock: boolean
+   showStats: boolean
+-  showRewards: boolean
+-  showBinance: boolean
+-  showTogether: boolean
++//  showRewards: boolean
++//  showBinance: boolean
++//  showTogether: boolean
+   showTopSites: boolean
+-  showBrandedWallpaper: boolean
++//  showBrandedWallpaper: boolean
+ }
+ 
+ function getItemRowCount (p: PageProps): number {
+-  let right = (p.showClock ? 1 : 0) + (p.showRewards ? 2 : 0)
++  let right = (p.showClock ? 1 : 0)
+   let left = (p.showStats ? 1 : 0) + (p.showTopSites ? 1 : 0)
+   // Has space for branded logo to sit next to something on right?
+-  if (p.showBrandedWallpaper && left >= right) {
++  if (false && left >= right) {
+     left++
+   }
+   return Math.max(left, right) + 1 // extra 1 for footer
+@@ -38,7 +38,7 @@ export const Page = styled<PageProps, 'div'>('div')`
+      so that the footer goes in the correct location always,
+      yet can still merge upwards to previous rows. */
+   --ntp-item-row-count: ${getItemRowCount};
+-  --ntp-extra-footer-rows: ${p => p.showBrandedWallpaper ? 1 : 0};
++  --ntp-extra-footer-rows: ${p => 0};
+   --ntp-space-rows: 0;
+   --ntp-page-rows: calc(var(--ntp-item-row-count) + var(--ntp-space-rows));
+   --ntp-item-justify: start;
+diff --git a/src/brave/components/brave_new_tab_ui/containers/app.tsx b/src/brave/components/brave_new_tab_ui/containers/app.tsx
+index b28a9d5..14d88d6 100644
+--- a/src/brave/components/brave_new_tab_ui/containers/app.tsx
++++ b/src/brave/components/brave_new_tab_ui/containers/app.tsx
+@@ -44,10 +44,10 @@ class DefaultPage extends React.Component<Props, {}> {
+           saveShowClock={PreferencesAPI.saveShowClock}
+           saveShowStats={PreferencesAPI.saveShowStats}
+           saveShowTopSites={PreferencesAPI.saveShowTopSites}
+-          saveShowRewards={PreferencesAPI.saveShowRewards}
+-          saveShowTogether={PreferencesAPI.saveShowTogether}
+-          saveShowBinance={PreferencesAPI.saveShowBinance}
+-          saveBrandedWallpaperOptIn={PreferencesAPI.saveBrandedWallpaperOptIn}
++//          saveShowRewards={PreferencesAPI.saveShowRewards}
++//          saveShowTogether={PreferencesAPI.saveShowTogether}
++//          saveShowBinance={PreferencesAPI.saveShowBinance}
++//          saveBrandedWallpaperOptIn={PreferencesAPI.saveBrandedWallpaperOptIn}
+         />
+       )
+   }
+diff --git a/src/brave/components/brave_new_tab_ui/containers/newTab/index.tsx b/src/brave/components/brave_new_tab_ui/containers/newTab/index.tsx
+index 393b3a8..c98e710 100644
+--- a/src/brave/components/brave_new_tab_ui/containers/newTab/index.tsx
++++ b/src/brave/components/brave_new_tab_ui/containers/newTab/index.tsx
+@@ -12,9 +12,9 @@ import FooterInfo from './footerInfo'
+ import SiteRemovalNotification from './notification'
+ import {
+   ClockWidget as Clock,
+-  RewardsWidget as Rewards,
+-  TogetherWidget as Together,
+-  BinanceWidget as Binance
++//  RewardsWidget as Rewards,
++//  TogetherWidget as Together,
++//  BinanceWidget as Binance
+ } from '../../components/default'
+ import * as Page from '../../components/default/page'
+ import BrandedWallpaperLogo from '../../components/default/brandedWallpaper/logo'
+@@ -45,10 +45,10 @@ interface Props {
+   saveShowClock: (value: boolean) => void
+   saveShowTopSites: (value: boolean) => void
+   saveShowStats: (value: boolean) => void
+-  saveShowRewards: (value: boolean) => void
+-  saveShowTogether: (value: boolean) => void
+-  saveShowBinance: (value: boolean) => void
+-  saveBrandedWallpaperOptIn: (value: boolean) => void
++//  saveShowRewards: (value: boolean) => void
++//  saveShowTogether: (value: boolean) => void
++//  saveShowBinance: (value: boolean) => void
++//  saveBrandedWallpaperOptIn: (value: boolean) => void
+ }
+ 
+ interface State {
+@@ -131,6 +131,7 @@ class NewTabPage extends React.Component<Props, State> {
+     }
+ 
+     // Handles updates from brave://settings/newTab
++/*
+     const oldShowRewards = prevProps.newTabData.showRewards
+     const oldShowBinance = prevProps.newTabData.showBinance
+     const oldShowTogether = prevProps.newTabData.showTogether
+@@ -149,6 +150,7 @@ class NewTabPage extends React.Component<Props, State> {
+     } else if (oldShowTogether && !showTogether) {
+       this.props.actions.removeStackWidget('together')
+     }
++*/
+   }
+ 
+   trackCachedImage () {
+@@ -211,6 +213,7 @@ class NewTabPage extends React.Component<Props, State> {
+     )
+   }
+ 
++/*
+   toggleShowRewards = () => {
+     const { showRewards } = this.props.newTabData
+ 
+@@ -253,6 +256,7 @@ class NewTabPage extends React.Component<Props, State> {
+       })
+     }
+   }
++*/
+ 
+   onBinanceClientUrl = (clientUrl: string) => {
+     this.props.actions.onBinanceClientUrl(clientUrl)
+@@ -306,6 +310,7 @@ class NewTabPage extends React.Component<Props, State> {
+     this.props.actions.onAssetDepositInfo(symbol, address, url)
+   }
+ 
++/*
+   disableBrandedWallpaper = () => {
+     this.props.saveBrandedWallpaperOptIn(false)
+   }
+@@ -315,6 +320,7 @@ class NewTabPage extends React.Component<Props, State> {
+       !this.props.newTabData.brandedWallpaperOptIn
+     )
+   }
++*/
+ 
+   enableAds = () => {
+     chrome.braveRewards.saveAdsSetting('adsEnabled', 'true')
+@@ -459,6 +465,7 @@ class NewTabPage extends React.Component<Props, State> {
+     this.props.actions.setAuthInvalid(false)
+   }
+ 
++/*
+   getCryptoContent () {
+     const { widgetStackOrder, binanceState, togetherSupported, showRewards } = this.props.newTabData
+     const lookup = {
+@@ -615,11 +622,12 @@ class NewTabPage extends React.Component<Props, State> {
+       />
+     )
+   }
++*/
+ 
+   render () {
+     const { newTabData, gridSitesData, actions } = this.props
+     const { showSettingsMenu } = this.state
+-    const { binanceState } = newTabData
++//    const { binanceState } = newTabData
+ 
+     if (!newTabData) {
+       return null
+@@ -628,7 +636,7 @@ class NewTabPage extends React.Component<Props, State> {
+     const hasImage = this.imageSource !== undefined
+     const isShowingBrandedWallpaper = newTabData.brandedWallpaperData ? true : false
+     const showTopSites = !!this.props.gridSitesData.gridSites.length && newTabData.showTopSites
+-    const cryptoContent = this.renderCryptoContent()
++//    const cryptoContent = this.renderCryptoContent()
+ 
+     return (
+       <Page.App dataIsReady={newTabData.initialDataLoaded}>
+@@ -648,11 +656,11 @@ class NewTabPage extends React.Component<Props, State> {
+         <Page.Page
+             showClock={newTabData.showClock}
+             showStats={newTabData.showStats}
+-            showRewards={!!cryptoContent}
+-            showTogether={newTabData.showTogether && newTabData.togetherSupported}
+-            showBinance={newTabData.showBinance}
++//            showRewards={!!cryptoContent}
++//            showTogether={newTabData.showTogether && newTabData.togetherSupported}
++//            showBinance={newTabData.showBinance}
+             showTopSites={showTopSites}
+-            showBrandedWallpaper={isShowingBrandedWallpaper}
++//            showBrandedWallpaper={isShowingBrandedWallpaper}
+         >
+           {newTabData.showStats &&
+           <Page.GridItemStats>
+@@ -698,7 +706,6 @@ class NewTabPage extends React.Component<Props, State> {
+             </Page.GridItemNotification>
+             ) : null
+           }
+-            {cryptoContent}
+           <Page.Footer>
+             <Page.FooterContent>
+             {isShowingBrandedWallpaper && newTabData.brandedWallpaperData &&
+@@ -727,21 +734,21 @@ class NewTabPage extends React.Component<Props, State> {
+           toggleShowClock={this.toggleShowClock}
+           toggleShowStats={this.toggleShowStats}
+           toggleShowTopSites={this.toggleShowTopSites}
+-          toggleBrandedWallpaperOptIn={this.toggleShowBrandedWallpaper}
++//          toggleBrandedWallpaperOptIn={this.toggleShowBrandedWallpaper}
+           showBackgroundImage={newTabData.showBackgroundImage}
+           showClock={newTabData.showClock}
+           showStats={newTabData.showStats}
+           showTopSites={newTabData.showTopSites}
+-          showRewards={newTabData.showRewards}
+-          showBinance={newTabData.showBinance}
+-          brandedWallpaperOptIn={newTabData.brandedWallpaperOptIn}
++//          showRewards={newTabData.showRewards}
++//          showBinance={newTabData.showBinance}
++//          brandedWallpaperOptIn={newTabData.brandedWallpaperOptIn}
+           allowSponsoredWallpaperUI={newTabData.featureFlagBraveNTPSponsoredImagesWallpaper}
+-          toggleShowRewards={this.toggleShowRewards}
+-          toggleShowBinance={this.toggleShowBinance}
+-          binanceSupported={binanceState.binanceSupported}
+-          togetherSupported={newTabData.togetherSupported}
+-          toggleShowTogether={this.toggleShowTogether}
+-          showTogether={newTabData.showTogether}
++//          toggleShowRewards={this.toggleShowRewards}
++//          toggleShowBinance={this.toggleShowBinance}
++//          binanceSupported={binanceState.binanceSupported}
++//          togetherSupported={newTabData.togetherSupported}
++//          toggleShowTogether={this.toggleShowTogether}
++//          showTogether={newTabData.showTogether}
+         />
+       </Page.App>
+     )
+diff --git a/src/brave/components/brave_new_tab_ui/containers/newTab/settings/backgroundImage.tsx b/src/brave/components/brave_new_tab_ui/containers/newTab/settings/backgroundImage.tsx
+index 462da8c..9f1020b 100644
+--- a/src/brave/components/brave_new_tab_ui/containers/newTab/settings/backgroundImage.tsx
++++ b/src/brave/components/brave_new_tab_ui/containers/newTab/settings/backgroundImage.tsx
+@@ -14,9 +14,9 @@ import { Toggle } from '../../../components/toggle'
+ import { getLocale } from '../../../../common/locale'
+ 
+ interface Props {
+-  toggleBrandedWallpaperOptIn: () => void
++//  toggleBrandedWallpaperOptIn: () => void
+   toggleShowBackgroundImage: () => void
+-  brandedWallpaperOptIn: boolean
++//  brandedWallpaperOptIn: boolean
+   showBackgroundImage: boolean
+ }
+ 
+@@ -24,8 +24,8 @@ class BackgroundImageSettings extends React.PureComponent<Props, {}> {
+   render () {
+     const {
+       toggleShowBackgroundImage,
+-      toggleBrandedWallpaperOptIn,
+-      brandedWallpaperOptIn,
++//      toggleBrandedWallpaperOptIn,
++//      brandedWallpaperOptIn,
+       showBackgroundImage
+     } = this.props
+ 
+@@ -39,17 +39,6 @@ class BackgroundImageSettings extends React.PureComponent<Props, {}> {
+             size='large'
+           />
+         </SettingsRow>
+-        <SettingsRow isChildSetting={true}>
+-          <SettingsText>{getLocale('brandedWallpaperOptIn')}</SettingsText>
+-          <Toggle
+-            onChange={toggleBrandedWallpaperOptIn}
+-            // This option can only be enabled if
+-            // users opt in for background images
+-            checked={showBackgroundImage && brandedWallpaperOptIn}
+-            disabled={!showBackgroundImage}
+-            size='small'
+-          />
+-        </SettingsRow>
+       </div>
+     )
+   }
+diff --git a/src/brave/components/brave_new_tab_ui/containers/newTab/settings.tsx b/src/brave/components/brave_new_tab_ui/containers/newTab/settings.tsx
+index e86f5e2..e679255 100644
+--- a/src/brave/components/brave_new_tab_ui/containers/newTab/settings.tsx
++++ b/src/brave/components/brave_new_tab_ui/containers/newTab/settings.tsx
+@@ -25,18 +25,18 @@ import { getLocale } from '../../../common/locale'
+ import { CloseStrokeIcon } from 'brave-ui/components/icons'
+ import BackgroundImageIcon from './settings/icons/backgroundImage.svg'
+ import NraveStatsIcon from './settings/icons/braveStats.svg'
+-import BraveRewardsIcon from './settings/icons/braveRewards.svg'
++//import BraveRewardsIcon from './settings/icons/braveRewards.svg'
+ import TopSitesIcon from './settings/icons/topSites.svg'
+ import ClockIcon from './settings/icons/clock.svg'
+-import MoreCardsIcon from './settings/icons/moreCards.svg'
++//import MoreCardsIcon from './settings/icons/moreCards.svg'
+ 
+ // Tabs
+ import BackgroundImageSettings from './settings/backgroundImage'
+ import BraveStatsSettings from './settings/braveStats'
+-import BraveRewardsSettings from './settings/braveRewards'
++//import BraveRewardsSettings from './settings/braveRewards'
+ import TopSitesSettings from './settings/topSites'
+ import ClockSettings from './settings/clock'
+-import MoreCardsSettings from './settings/moreCards'
++//import MoreCardsSettings from './settings/moreCards'
+ 
+ export interface Props {
+   textDirection: string
+@@ -46,24 +46,24 @@ export interface Props {
+   toggleShowClock: () => void
+   toggleShowStats: () => void
+   toggleShowTopSites: () => void
+-  toggleShowRewards: () => void
+-  toggleShowTogether: () => void
+-  toggleShowBinance: () => void
+-  toggleBrandedWallpaperOptIn: () => void
++//  toggleShowRewards: () => void
++//  toggleShowTogether: () => void
++//  toggleShowBinance: () => void
++//  toggleBrandedWallpaperOptIn: () => void
+   showBackgroundImage: boolean
+   showStats: boolean
+   showClock: boolean
+   showTopSites: boolean
+-  brandedWallpaperOptIn: boolean
++//  brandedWallpaperOptIn: boolean
+   allowSponsoredWallpaperUI: boolean
+-  showRewards: boolean
+-  showTogether: boolean
+-  showBinance: boolean
+-  binanceSupported: boolean
+-  togetherSupported: boolean
++//  showRewards: boolean
++//  showTogether: boolean
++//  showBinance: boolean
++//  binanceSupported: boolean
++//  togetherSupported: boolean
+ }
+ 
+-type ActiveTabType = 'BackgroundImage' | 'BraveStats' | 'Rewards' | 'TopSites' | 'Clock' | 'moreCards'
++type ActiveTabType = 'BackgroundImage' | 'BraveStats' | 'TopSites' | 'Clock'
+ 
+ interface State {
+   activeTab: number
+@@ -112,7 +112,7 @@ export default class Settings extends React.PureComponent<Props, State> {
+ 
+   get activeTabOptions (): ActiveTabType[] {
+     return [
+-      'BackgroundImage', 'BraveStats', 'Rewards', 'TopSites', 'Clock', 'moreCards'
++      'BackgroundImage', 'BraveStats', 'TopSites', 'Clock'
+     ]
+   }
+ 
+@@ -126,17 +126,11 @@ export default class Settings extends React.PureComponent<Props, State> {
+         srcUrl = NraveStatsIcon
+         break
+       case 2:
+-        srcUrl = BraveRewardsIcon
+-        break
+-      case 3:
+         srcUrl = TopSitesIcon
+         break
+-      case 4:
++      case 3:
+         srcUrl = ClockIcon
+         break
+-      case 5:
+-        srcUrl = MoreCardsIcon
+-        break
+       default:
+         srcUrl = BackgroundImageIcon
+         break
+@@ -151,21 +145,21 @@ export default class Settings extends React.PureComponent<Props, State> {
+       toggleShowClock,
+       toggleShowStats,
+       toggleShowTopSites,
+-      toggleShowRewards,
+-      toggleShowTogether,
+-      toggleBrandedWallpaperOptIn,
++//      toggleShowRewards,
++//      toggleShowTogether,
++//      toggleBrandedWallpaperOptIn,
+       showBackgroundImage,
+       showStats,
+       showClock,
+       showTopSites,
+-      showRewards,
+-      showTogether,
+-      brandedWallpaperOptIn,
++//      showRewards,
++//      showTogether,
++//      brandedWallpaperOptIn,
+       allowSponsoredWallpaperUI,
+-      toggleShowBinance,
+-      showBinance,
+-      binanceSupported,
+-      togetherSupported
++//      toggleShowBinance,
++//      showBinance,
++//      binanceSupported,
++//      togetherSupported
+     } = this.props
+     const { activeTab } = this.state
+ 
+@@ -187,7 +181,7 @@ export default class Settings extends React.PureComponent<Props, State> {
+                 <SettingsSidebarActiveButtonSlider translateTo={activeTab} />
+                 {
+                   this.activeTabOptions.map((tabName, index) => {
+-                    const name = index === (this.activeTabOptions.length - 1) ? tabName : `show${tabName}`
++                    const name = `show${tabName}`
+                     if (index === 0 && !allowSponsoredWallpaperUI) {
+                       return <div key={`sidebar-button=${index}`} />
+                     }
+@@ -215,9 +209,7 @@ export default class Settings extends React.PureComponent<Props, State> {
+                   activeTab === 0
+                     ? (
+                     <BackgroundImageSettings
+-                      toggleBrandedWallpaperOptIn={toggleBrandedWallpaperOptIn}
+                       toggleShowBackgroundImage={this.toggleShowBackgroundImage}
+-                      brandedWallpaperOptIn={brandedWallpaperOptIn}
+                       showBackgroundImage={showBackgroundImage}
+                     />
+                   ) : null
+@@ -233,15 +225,6 @@ export default class Settings extends React.PureComponent<Props, State> {
+                 }
+                 {
+                   activeTab === 2
+-                    ? (
+-                      <BraveRewardsSettings
+-                        toggleShowRewards={toggleShowRewards}
+-                        showRewards={showRewards}
+-                      />
+-                    ) : null
+-                }
+-                {
+-                  activeTab === 3
+                     ? (
+                       <TopSitesSettings
+                         toggleShowTopSites={toggleShowTopSites}
+@@ -250,7 +233,7 @@ export default class Settings extends React.PureComponent<Props, State> {
+                     ) : null
+                 }
+                 {
+-                  activeTab === 4
++                  activeTab === 3
+                     ? (
+                       <ClockSettings
+                         toggleShowClock={toggleShowClock}
+@@ -258,19 +241,6 @@ export default class Settings extends React.PureComponent<Props, State> {
+                       />
+                     ) : null
+                 }
+-                {
+-                  activeTab === 5
+-                    ? (
+-                      <MoreCardsSettings
+-                        toggleShowBinance={toggleShowBinance}
+-                        showBinance={showBinance}
+-                        binanceSupported={binanceSupported}
+-                        toggleShowTogether={toggleShowTogether}
+-                        showTogether={showTogether}
+-                        togetherSupported={togetherSupported}
+-                      />
+-                    ) : null
+-                }
+               </SettingsFeatureBody>
+             </SettingsContent>
+           </SettingsMenu>
+diff --git a/src/brave/components/brave_referrals/buildflags/buildflags.gni b/src/brave/components/brave_referrals/buildflags/buildflags.gni
+index 411f715..db15399 100644
+--- a/src/brave/components/brave_referrals/buildflags/buildflags.gni
++++ b/src/brave/components/brave_referrals/buildflags/buildflags.gni
+@@ -1,5 +1,6 @@
+ import("//build/config/features.gni")
+ 
+ declare_args() {
+-  enable_brave_referrals = is_mac || is_linux || is_win || is_android
++  #enable_brave_referrals = is_mac || is_linux || is_win || is_android
++  enable_brave_referrals = false
+ }
+diff --git a/src/brave/components/brave_rewards/browser/BUILD.gn b/src/brave/components/brave_rewards/browser/BUILD.gn
+index 4d64a16..ec6bb8f 100644
+--- a/src/brave/components/brave_rewards/browser/BUILD.gn
++++ b/src/brave/components/brave_rewards/browser/BUILD.gn
+@@ -7,8 +7,8 @@ source_set("browser") {
+   ]
+ 
+   sources = [
+-    "android_util.cc",
+-    "android_util.h",
++#    "android_util.cc",
++#    "android_util.h",
+     "switches.cc",
+     "switches.h",
+     "auto_contribution_props.cc",
+@@ -57,8 +57,8 @@ source_set("browser") {
+     "transaction_report_info.h",
+     "contribution_report_info.cc",
+     "contribution_report_info.h",
+-    "rewards_database.h",
+-    "rewards_database.cc",
++#    "rewards_database.h",
++#    "rewards_database.cc",
+   ]
+ 
+   deps = [
+diff --git a/src/brave/components/brave_rewards/browser/buildflags/buildflags.gni b/src/brave/components/brave_rewards/browser/buildflags/buildflags.gni
+index 79b648e..5ab6267 100644
+--- a/src/brave/components/brave_rewards/browser/buildflags/buildflags.gni
++++ b/src/brave/components/brave_rewards/browser/buildflags/buildflags.gni
+@@ -1,5 +1,6 @@
+ import("//build/config/features.gni")
+ 
+ declare_args() {
+-  brave_rewards_enabled = is_mac || is_linux || is_win || is_android
++  #brave_rewards_enabled = is_mac || is_linux || is_win || is_android
++  brave_rewards_enabled = false
+ }
+diff --git a/src/brave/components/brave_shields/browser/ad_block_service.cc b/src/brave/components/brave_shields/browser/ad_block_service.cc
+index cbfca74..08549e8 100644
+--- a/src/brave/components/brave_shields/browser/ad_block_service.cc
++++ b/src/brave/components/brave_shields/browser/ad_block_service.cc
+@@ -26,7 +26,7 @@
+ #include "components/prefs/pref_registry_simple.h"
+ #include "components/prefs/pref_service.h"
+ 
+-#define DAT_FILE "rs-ABPFilterParserData.dat"
++//#define DAT_FILE "rs-ABPFilterParserData.dat"
+ 
+ namespace brave_shields {
+ 
+@@ -70,8 +70,8 @@ bool AdBlockService::Init() {
+ void AdBlockService::OnComponentReady(const std::string& component_id,
+                                       const base::FilePath& install_dir,
+                                       const std::string& manifest) {
+-  base::FilePath dat_file_path = install_dir.AppendASCII(DAT_FILE);
+-  GetDATFileData(dat_file_path);
++//  base::FilePath dat_file_path = install_dir.AppendASCII(DAT_FILE);
++//  GetDATFileData(dat_file_path);
+ 
+   base::FilePath resources_file_path =
+       install_dir.AppendASCII(kAdBlockResourcesFilename);
+diff --git a/src/brave/components/brave_sync/brave_sync_prefs.cc b/src/brave/components/brave_sync/brave_sync_prefs.cc
+index 5328625..3716c69 100644
+--- a/src/brave/components/brave_sync/brave_sync_prefs.cc
++++ b/src/brave/components/brave_sync/brave_sync_prefs.cc
+@@ -109,7 +109,8 @@ std::string Prefs::GetSeed() const {
+     return std::string();
+   }
+   std::string seed;
+-  if (!OSCrypt::DecryptString(encrypted_seed, &seed)) {
++  if (encrypted_seed.empty() ||
++      !OSCrypt::DecryptString(encrypted_seed, &seed)) {
+     LOG(ERROR) << "Decrypt sync seed failure";
+     return std::string();
+   }
+diff --git a/src/brave/components/brave_sync/buildflags/buildflags.gni b/src/brave/components/brave_sync/buildflags/buildflags.gni
+index 6021b90..4f84a00 100644
+--- a/src/brave/components/brave_sync/buildflags/buildflags.gni
++++ b/src/brave/components/brave_sync/buildflags/buildflags.gni
+@@ -2,7 +2,8 @@ import("//brave/build/config.gni")
+ import("//build/config/features.gni")
+ 
+ declare_args() {
+-  enable_brave_sync =
+-    brave_channel == "development" ||
+-    brave_channel == "nightly"
++  #enable_brave_sync =
++  #  brave_channel == "development" ||
++  #  brave_channel == "nightly"
++  enable_brave_sync = false
+ }
+diff --git a/src/brave/components/brave_together/buildflags/buildflags.gni b/src/brave/components/brave_together/buildflags/buildflags.gni
+index aa9d753..ae7ec99 100644
+--- a/src/brave/components/brave_together/buildflags/buildflags.gni
++++ b/src/brave/components/brave_together/buildflags/buildflags.gni
+@@ -2,5 +2,6 @@ import("//brave/build/config.gni")
+ import("//build/config/features.gni")
+ 
+ declare_args() {
+-  brave_together_enabled = brave_channel == "nightly"
++  #brave_together_enabled = brave_channel == "nightly"
++  brave_together_enabled = false
+ }
+diff --git a/src/brave/components/brave_wallet/browser/buildflags/buildflags.gni b/src/brave/components/brave_wallet/browser/buildflags/buildflags.gni
+index a2e86ac..9eafdcc 100644
+--- a/src/brave/components/brave_wallet/browser/buildflags/buildflags.gni
++++ b/src/brave/components/brave_wallet/browser/buildflags/buildflags.gni
+@@ -2,5 +2,6 @@ import("//build/config/features.gni")
+ import("//extensions/buildflags/buildflags.gni")
+ 
+ declare_args() {
+-  brave_wallet_enabled = enable_extensions
++  #brave_wallet_enabled = enable_extensions
++  brave_wallet_enabled = false
+ }
+diff --git a/src/brave/components/brave_webtorrent/browser/buildflags/buildflags.gni b/src/brave/components/brave_webtorrent/browser/buildflags/buildflags.gni
+index 7b2dd19..0d92ad3 100644
+--- a/src/brave/components/brave_webtorrent/browser/buildflags/buildflags.gni
++++ b/src/brave/components/brave_webtorrent/browser/buildflags/buildflags.gni
+@@ -2,6 +2,7 @@ import("//build/config/features.gni")
+ import("//extensions/buildflags/buildflags.gni")
+ 
+ declare_args() {
+-  enable_brave_webtorrent = enable_extensions
++  #enable_brave_webtorrent = enable_extensions
++  enable_brave_webtorrent = false
+ }
+ 
+diff --git a/src/brave/components/ntp_background_images/browser/ntp_background_images_service.cc b/src/brave/components/ntp_background_images/browser/ntp_background_images_service.cc
+index e4e120d..aebd445 100644
+--- a/src/brave/components/ntp_background_images/browser/ntp_background_images_service.cc
++++ b/src/brave/components/ntp_background_images/browser/ntp_background_images_service.cc
+@@ -275,6 +275,7 @@ void NTPBackgroundImagesService::CheckSuperReferralComponent() {
+ 
+     // This below code is for recover above abnormal situation - Shutdown
+     // situation before getting map table or getting initial component.
++    /*
+     if (brave::BraveReferralsService::IsDefaultReferralCode(code)) {
+       MarkThisInstallIsNotSuperReferralForever();
+     } else {
+@@ -282,6 +283,7 @@ void NTPBackgroundImagesService::CheckSuperReferralComponent() {
+       // mapping table.
+       DownloadSuperReferralMappingTable();
+     }
++    */
+     return;
+   }
+ 
+@@ -306,11 +308,13 @@ void NTPBackgroundImagesService::OnPreferenceChanged(
+   DVLOG(2) << __func__ << ": Got referral promo code: "
+                        << new_referral_code;
+   DCHECK(!new_referral_code.empty());
++  /*
+   if (brave::BraveReferralsService::IsDefaultReferralCode(new_referral_code)) {
+     DVLOG(2) << __func__ << ": This has default referral promo code.";
+     MarkThisInstallIsNotSuperReferralForever();
+     return;
+   }
++  */
+ 
+   DVLOG(2) << __func__ << ": This has non default referral promo code."
+                        << " Let's check this code is super referral or not"
+diff --git a/src/brave/components/p3a/brave_p3a_service.cc b/src/brave/components/p3a/brave_p3a_service.cc
+index 5ee4456..fccbf2c 100644
+--- a/src/brave/components/p3a/brave_p3a_service.cc
++++ b/src/brave/components/p3a/brave_p3a_service.cc
+@@ -103,7 +103,7 @@ void BraveP3AService::RegisterPrefs(PrefRegistrySimple* registry,
+                                     bool first_run) {
+   BraveP3ALogStore::RegisterPrefs(registry);
+   registry->RegisterTimePref(kLastRotationTimeStampPref, {});
+-  registry->RegisterBooleanPref(kP3AEnabled, true);
++  registry->RegisterBooleanPref(kP3AEnabled, false);
+ 
+   // first_run::IsChromeFirstRun() is not available on Android and also
+   // we don't have infobars on android.
+@@ -263,7 +263,7 @@ void BraveP3AService::InitPyxisMeta() {
+ 
+   pyxis_meta_.country_code =
+       base::ToUpperASCII(base::CountryCodeForCurrentTimezone());
+-  pyxis_meta_.refcode = local_state_->GetString(kReferralPromoCode);
++//  pyxis_meta_.refcode = local_state_->GetString(kReferralPromoCode);
+   MaybeStripRefcodeAndCountry(&pyxis_meta_);
+ 
+   VLOG(2) << "Pyxis meta: " << pyxis_meta_.platform << " "
+diff --git a/src/brave/components/resources/brave_components_strings.grd b/src/brave/components/resources/brave_components_strings.grd
+index 0f5c556..626adfc 100644
+--- a/src/brave/components/resources/brave_components_strings.grd
++++ b/src/brave/components/resources/brave_components_strings.grd
+@@ -200,6 +200,7 @@
+       <message name="IDS_BRAVE_NEW_TAB_TOP_SITES" desc="Top Sites title">top sites</message>
+       <message name="IDS_BRAVE_NEW_TAB_STATS" desc="Brave Stats title">Brave Stats</message>
+       <message name="IDS_BRAVE_NEW_TAB_CLOCK" desc="Clock title">clock</message>
++      <message name="IDS_BRAVE_NEW_TAB_TITLE" desc="New Tab">New Tab</message>
+ 
+       <!-- WebUI private tab resources -->
+       <message name="IDS_BRAVE_PRIVATE_NEW_TAB_LEARN_MORE" desc="">Learn more</message>
+diff --git a/src/brave/components/resources/strings/brave_components_resources_zh-CN.xtb b/src/brave/components/resources/strings/brave_components_resources_zh-CN.xtb
+index 0fade15..338105f 100644
+--- a/src/brave/components/resources/strings/brave_components_resources_zh-CN.xtb
++++ b/src/brave/components/resources/strings/brave_components_resources_zh-CN.xtb
+@@ -620,4 +620,5 @@
+ <translation id="453977518730680921">自动播放媒体</translation>
+ <translation id="7701466644604753106">开启 Speedreader</translation>
+ <translation id="763042262431778831">关闭 Speedreader</translation>
++<translation id="7554791636758816595">新标签页</translation>
+ </translationbundle>
+\ No newline at end of file
+diff --git a/src/brave/components/services/tor/public/interfaces/tor.mojom b/src/brave/components/services/tor/public/interfaces/tor.mojom
+index 8077d8b..6536f11 100644
+--- a/src/brave/components/services/tor/public/interfaces/tor.mojom
++++ b/src/brave/components/services/tor/public/interfaces/tor.mojom
+@@ -10,6 +10,9 @@ const string kServiceName = "tor_launcher";
+ struct TorConfig {
+   mojo_base.mojom.FilePath binary_path;
+   string proxy_string;
++
++  bool isproxyprofile_disable;
++  string proxyprofile_string;
+   string proxy_host;
+   string proxy_port;
+   mojo_base.mojom.FilePath tor_data_path;
+diff --git a/src/brave/components/services/tor/tor_launcher_impl.cc b/src/brave/components/services/tor/tor_launcher_impl.cc
+index 4990561..2b6b6cb 100644
+--- a/src/brave/components/services/tor/tor_launcher_impl.cc
++++ b/src/brave/components/services/tor/tor_launcher_impl.cc
+@@ -110,6 +110,10 @@ void TorLauncherImpl::Launch(const TorConfig& config,
+   args.AppendArg("/nonexistent");
+   args.AppendArg("--SocksPort");
+   args.AppendArg(config.proxy_host() + ":" + config.proxy_port());
++  if (!config.isproxyprofile_disable()) {
++    args.AppendArg("--Socks5Proxy");
++    args.AppendArg(config.proxyprofile_string());
++  }
+   args.AppendArg("--TruncateLogFile");
+   args.AppendArg("1");
+   base::FilePath tor_data_path = config.tor_data_path();
+diff --git a/src/brave/ui/webui/resources/br_elements/br_toolbar/br_toolbar.html b/src/brave/ui/webui/resources/br_elements/br_toolbar/br_toolbar.html
+index 4ec6006..f91c243 100644
+--- a/src/brave/ui/webui/resources/br_elements/br_toolbar/br_toolbar.html
++++ b/src/brave/ui/webui/resources/br_elements/br_toolbar/br_toolbar.html
+@@ -120,6 +120,7 @@
+             <span class="nav-item_text">[[settingsTitle]]</span>
+           </a>
+         </li>
++        <!--
+         <li class="nav-items_list-item" title="[[braveRewardsTitle]]">
+           <a class$="nav-item [[getNavItemSelectedClassName('rewards')]]" href="chrome://rewards">
+             <span class="nav-item_icon">
+@@ -131,6 +132,7 @@
+             <span class="nav-item_text">[[braveRewardsTitle]]</span>
+           </a>
+         </li>
++        -->
+         <li class="nav-items_list-item" title="[[historyTitle]]">
+           <a class$="nav-item [[getNavItemSelectedClassName('history')]]" href="chrome://history">
+             <span class="nav-item_icon">
+@@ -165,6 +167,7 @@
+             <span class="nav-item_text">[[downloadsTitle]]</span>
+           </a>
+         </li>
++        <!--
+         <li class="nav-items_list-item" title="[[walletsTitle]]">
+           <a class$="nav-item [[getNavItemSelectedClassName('wallet')]]" href="chrome://wallet">
+             <span class="nav-item_icon">
+@@ -177,6 +180,7 @@
+             <span class="nav-item_text">[[walletsTitle]]</span>
+           </a>
+         </li>
++        -->
+       </ul>
+         <br-toolbar-search-field id="search"
+           narrow="[[narrow]]"
+diff --git a/src/chrome/browser/chrome_browser_main.cc b/src/chrome/browser/chrome_browser_main.cc
+index b02e2b6..3672d77 100644
+--- a/src/chrome/browser/chrome_browser_main.cc
++++ b/src/chrome/browser/chrome_browser_main.cc
+@@ -1558,7 +1558,8 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
+ 
+   PreBrowserStart();
+ 
+-  if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
++//  if (!parsed_command_line().HasSwitch(switches::kDisableComponentUpdate)) {
++  if (false) {
+     component_updater::RegisterComponentsForUpdate(profile_->IsOffTheRecord(),
+                                                    profile_->GetPrefs());
+   }
+diff --git a/src/chrome/browser/component_updater/pepper_flash_component_installer.cc b/src/chrome/browser/component_updater/pepper_flash_component_installer.cc
+index e866c1b..202d452 100644
+--- a/src/chrome/browser/component_updater/pepper_flash_component_installer.cc
++++ b/src/chrome/browser/component_updater/pepper_flash_component_installer.cc
+@@ -68,7 +68,7 @@ namespace component_updater {
+ 
+ namespace {
+ 
+-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
++//#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ #if defined(OS_CHROMEOS)
+ // CRX hash for Chrome OS. The extension id is:
+ // ckjlcfmdbdglblbjglepgnoekdnkoklc.
+@@ -154,9 +154,9 @@ bool SkipFlashRegistration(ComponentUpdateService* cus) {
+   return false;
+ }
+ #endif  // defined(OS_CHROMEOS)
+-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
++//#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ 
+-#if !defined(OS_LINUX) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
++#if !defined(OS_LINUX)// && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ bool MakePepperFlashPluginInfo(const base::FilePath& flash_path,
+                                const base::Version& flash_version,
+                                bool out_of_process,
+@@ -243,7 +243,7 @@ void UpdatePathService(const base::FilePath& path) {
+ }
+ #endif  // !defined(OS_LINUX) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ 
+-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
++//#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ class FlashComponentInstallerPolicy : public ComponentInstallerPolicy {
+  public:
+   FlashComponentInstallerPolicy();
+@@ -368,12 +368,12 @@ std::vector<std::string> FlashComponentInstallerPolicy::GetMimeTypes() const {
+   mime_types.push_back("application/futuresplash");
+   return mime_types;
+ }
+-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
++//#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ 
+ }  // namespace
+ 
+ void RegisterPepperFlashComponent(ComponentUpdateService* cus) {
+-#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
++//#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+   // Component updated flash supersedes bundled flash therefore if that one
+   // is disabled then this one should never install.
+   base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
+@@ -388,7 +388,7 @@ void RegisterPepperFlashComponent(ComponentUpdateService* cus) {
+   auto installer = base::MakeRefCounted<ComponentInstaller>(
+       std::make_unique<FlashComponentInstallerPolicy>());
+   installer->Register(cus, base::OnceClosure());
+-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
++//#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+ }
+ 
+ }  // namespace component_updater
+diff --git a/src/chrome/browser/extensions/dev_mode_bubble_delegate.cc b/src/chrome/browser/extensions/dev_mode_bubble_delegate.cc
+index 4751985..22afb96 100644
+--- a/src/chrome/browser/extensions/dev_mode_bubble_delegate.cc
++++ b/src/chrome/browser/extensions/dev_mode_bubble_delegate.cc
+@@ -35,8 +35,9 @@ DevModeBubbleDelegate::~DevModeBubbleDelegate() {
+ }
+ 
+ bool DevModeBubbleDelegate::ShouldIncludeExtension(const Extension* extension) {
+-  return (extension->location() == Manifest::UNPACKED ||
+-          extension->location() == Manifest::COMMAND_LINE);
++//  return (extension->location() == Manifest::UNPACKED ||
++//          extension->location() == Manifest::COMMAND_LINE);
++  return false;
+ }
+ 
+ void DevModeBubbleDelegate::AcknowledgeExtension(
+diff --git a/src/chrome/browser/notifications/notification_display_service_impl.cc b/src/chrome/browser/notifications/notification_display_service_impl.cc
+index 39c6aa6..4eae7f2 100644
+--- a/src/chrome/browser/notifications/notification_display_service_impl.cc
++++ b/src/chrome/browser/notifications/notification_display_service_impl.cc
+@@ -167,7 +167,7 @@ NotificationDisplayServiceImpl::NotificationDisplayServiceImpl(Profile* profile)
+     AddNotificationHandler(NotificationHandler::Type::ANNOUNCEMENT,
+                            std::make_unique<AnnouncementNotificationHandler>());
+ #endif
+-    BRAVE_ADD_BRAVE_ADS_NOTIFICATION_HANDLER;
++//    BRAVE_ADD_BRAVE_ADS_NOTIFICATION_HANDLER;
+   }
+ 
+   // Initialize the bridge if native notifications are available, otherwise
+diff --git a/src/chrome/browser/resources/bookmarks/item.html b/src/chrome/browser/resources/bookmarks/item.html
+index def6e11..292b988 100644
+--- a/src/chrome/browser/resources/bookmarks/item.html
++++ b/src/chrome/browser/resources/bookmarks/item.html
+@@ -28,7 +28,7 @@
+ 
+   #website-title {
+     color: var(--cr-primary-text-color);
+-    flex: 1;
++    flex: 0 auto;
+     margin-inline-start: 20px;
+     text-decoration: none;
+   }
+@@ -37,6 +37,10 @@
+     flex: 0 auto;
+   }
+ 
++  :host([is-selected-item_]) #title-tab {
++    display: none;
++  }
++
+   @media (prefers-color-scheme: dark) {
+     :host([is-selected-item_]) #website-title {
+       color: var(--google-grey-900);
+@@ -88,8 +92,11 @@
+ </style>
+ <div id="icon"></div>
+ <div id="website-title" class="elided-text" title="[[item_.title]]">
+-  [[item_.title]]
++  <a href="[[item_.url]]" id="link" class="website-link"
++      title="[[item_.title]]" on-click="onLinkClick_"
++      >[[item_.title]]</a>
+ </div>
++<span id="title-tab" style=" flex: 1;min-width: 100px;"></span>
+ <div id="website-url" class="elided-text" title="[[item_.url]]">
+   [[item_.url]]
+ </div>
+diff --git a/src/chrome/browser/resources/bookmarks/item.js b/src/chrome/browser/resources/bookmarks/item.js
+index ff508f7..982c3cf 100644
+--- a/src/chrome/browser/resources/bookmarks/item.js
++++ b/src/chrome/browser/resources/bookmarks/item.js
+@@ -196,7 +196,20 @@ Polymer({
+       this.$.menuButton.focus();
+     }
+   },
+-
++  /**
++   * @param {MouseEvent} e
++   * @private
++   */
++  onLinkClick_(e) {
++    if (!this.isSelectedItem_) {
++      this.selectThisItem_();
++    }
++    const commandManager = CommandManager.getInstance();
++    const itemSet = this.getState().selection.items;
++    if (commandManager.canExecute(Command.OPEN, itemSet)) {
++      commandManager.handle(Command.OPEN, itemSet);
++    }
++  },
+   /**
+    * @param {MouseEvent} e
+    * @private
+diff --git a/src/chrome/browser/resources/bookmarks/shared_style.html b/src/chrome/browser/resources/bookmarks/shared_style.html
+index b759e57..9680b8e 100644
+--- a/src/chrome/browser/resources/bookmarks/shared_style.html
++++ b/src/chrome/browser/resources/bookmarks/shared_style.html
+@@ -80,5 +80,13 @@
+       margin: 2px;
+       width: 16px;
+     }
++
++      .website-link {
++        align-items: center;
++        color: var(--cr-primary-text-color);
++        display: flex;
++        overflow: hidden;
++        text-decoration: none;
++      }
+   </style>
+ </template>
+diff --git a/src/chrome/browser/resources/settings/about_page/about_page.html b/src/chrome/browser/resources/settings/about_page/about_page.html
+index eb89c75..f360b29 100644
+--- a/src/chrome/browser/resources/settings/about_page/about_page.html
++++ b/src/chrome/browser/resources/settings/about_page/about_page.html
+@@ -81,7 +81,7 @@
+                     chrome://theme/current-channel-logo@2x 2x"
+             alt="$i18n{aboutProductLogoAlt}"
+             role="presentation">
+-        <h1 class="product-title">$i18n{aboutProductTitle}</h1>
++        <h1 class="product-title">$i18n{aboutProductTitle} -- bigfoxtail 修改编译版</h1>
+       </div>
+       <div class="settings-box two-line">
+         <!-- TODO(dpapad): Investigate why vulcanize does not handle well
+diff --git a/src/chrome/browser/resources/settings/about_page/about_page.js b/src/chrome/browser/resources/settings/about_page/about_page.js
+index 2356179..f55a2a5 100644
+--- a/src/chrome/browser/resources/settings/about_page/about_page.js
++++ b/src/chrome/browser/resources/settings/about_page/about_page.js
+@@ -116,7 +116,7 @@ Polymer({
+         'promotion-state-changed',
+         this.onPromoteUpdaterStatusChanged_.bind(this));
+     // </if>
+-    this.aboutBrowserProxy_.refreshUpdateStatus();
++    //this.aboutBrowserProxy_.refreshUpdateStatus();
+   },
+ 
+   /**
+diff --git a/src/chrome/browser/resources/settings/about_page/about_page_browser_proxy.js b/src/chrome/browser/resources/settings/about_page/about_page_browser_proxy.js
+index 3725f44..7ebf943 100644
+--- a/src/chrome/browser/resources/settings/about_page/about_page_browser_proxy.js
++++ b/src/chrome/browser/resources/settings/about_page/about_page_browser_proxy.js
+@@ -167,7 +167,7 @@ cr.define('settings', function() {
+      * Request update status from the browser. It results in one or more
+      * 'update-status-changed' WebUI events.
+      */
+-    refreshUpdateStatus() {}
++    // refreshUpdateStatus() {}
+ 
+     // <if expr="chromeos">
+     /** Opens the release notes app. */
+diff --git a/src/chrome/browser/resources/settings/people_page/people_page.html b/src/chrome/browser/resources/settings/people_page/people_page.html
+index 12ffa64..31a6bce 100644
+--- a/src/chrome/browser/resources/settings/people_page/people_page.html
++++ b/src/chrome/browser/resources/settings/people_page/people_page.html
+@@ -147,14 +147,12 @@
+           </div>
+         </template> <!-- if="[[!shouldShowSyncAccountControl_()]]" -->
+ 
+-<!--
+         <cr-link-row id="sync-setup"
+             label="$i18n{syncAndNonPersonalizedServices}"
+             sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
+             on-click="onSyncTap_"
+             role-description="$i18n{subpageArrowRoleDescription}">
+         </cr-link-row>
+--->
+ 
+ <if expr="not chromeos">
+         <template is="dom-if" if="[[signinAllowed_]]">
+diff --git a/src/chrome/browser/resources/settings/people_page/sync_controls.html b/src/chrome/browser/resources/settings/people_page/sync_controls.html
+index 6b347d4..5b2c1ff 100644
+--- a/src/chrome/browser/resources/settings/people_page/sync_controls.html
++++ b/src/chrome/browser/resources/settings/people_page/sync_controls.html
+@@ -28,7 +28,7 @@
+       }
+     </style>
+ 
+-    <template is="dom-if" if="[[!syncSetupFriendlySettings_]]">
++    <template is="dom-if" if="{{false}}">
+       <div class="settings-box first">
+         <div id="syncEverythingCheckboxLabel" class="start">
+           $i18n{syncEverythingCheckboxLabel}
+@@ -114,7 +114,7 @@
+         </div>
+         <cr-toggle checked="{{syncPrefs.preferencesSynced}}"
+             on-change="onSingleSyncDataTypeChanged_"
+-            disabled="[[syncPrefs.syncAllDataTypes]]"
++            disabled="true"
+             aria-labelledby="settingsCheckboxLabel">
+         </cr-toggle>
+       </div>
+diff --git a/src/chrome/browser/resources/settings/people_page/sync_controls.js b/src/chrome/browser/resources/settings/people_page/sync_controls.js
+index 5c601f3..795d5b4 100644
+--- a/src/chrome/browser/resources/settings/people_page/sync_controls.js
++++ b/src/chrome/browser/resources/settings/people_page/sync_controls.js
+@@ -98,7 +98,7 @@ Polymer({
+         'sync-prefs-changed', this.handleSyncPrefsChanged_.bind(this));
+ 
+     const router = settings.Router.getInstance();
+-    if (router.getCurrentRoute() === router.getRoutes().BRAVE_SYNC_SETUP) {
++    if (router.getCurrentRoute() === router.getRoutes().SYNC_ADVANCED) {
+       this.browserProxy_.didNavigateToSyncPage();
+     }
+   },
+@@ -225,7 +225,6 @@ Polymer({
+    * @private
+    */
+   syncControlsHidden_() {
+-    return false;
+     if (!this.syncStatus) {
+       // Show sync controls by default.
+       return false;
+diff --git a/src/chrome/browser/resources/settings/route.js b/src/chrome/browser/resources/settings/route.js
+index 48cf685..f753fcc 100644
+--- a/src/chrome/browser/resources/settings/route.js
++++ b/src/chrome/browser/resources/settings/route.js
+@@ -119,7 +119,7 @@ cr.define('settings', function() {
+ 
+     r.SEARCH = r.BASIC.createSection('/search', 'search');
+     if (!loadTimeData.getBoolean('isGuest')) {
+-      r.PEOPLE = r.BASIC.createSection('/people', 'people');
++      r.PEOPLE = r.BASIC.createSection('/getStarted', 'getStarted');
+       r.SYNC = r.PEOPLE.createChild('/syncSetup');
+       r.SYNC_ADVANCED = r.SYNC.createChild('/syncSetup/advanced');
+     }
+diff --git a/src/chrome/browser/signin/account_consistency_mode_manager.cc b/src/chrome/browser/signin/account_consistency_mode_manager.cc
+index 073a5d8..699fa00 100644
+--- a/src/chrome/browser/signin/account_consistency_mode_manager.cc
++++ b/src/chrome/browser/signin/account_consistency_mode_manager.cc
+@@ -155,9 +155,10 @@ bool AccountConsistencyModeManager::ShouldBuildServiceForProfile(
+ 
+ AccountConsistencyMethod
+ AccountConsistencyModeManager::GetAccountConsistencyMethod() {
+-#if defined(BRAVE_CHROMIUM_BUILD)
+-  return AccountConsistencyMethod::kDisabled;
+-#elif defined(OS_CHROMEOS)
++//#if defined(BRAVE_CHROMIUM_BUILD)
++//  return AccountConsistencyMethod::kDisabled;
++//#elif defined(OS_CHROMEOS)
++#if defined(OS_CHROMEOS)
+   // TODO(https://crbug.com/860671): ChromeOS should use the cached value.
+   // Changing the value dynamically is not supported.
+   return ComputeAccountConsistencyMethod(profile_);
+diff --git a/src/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc b/src/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
+index 7e0c2f2..8153c21 100644
+--- a/src/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
++++ b/src/chrome/browser/ui/views/bookmarks/bookmark_bar_view.cc
+@@ -1322,8 +1322,14 @@ void BookmarkBarView::OnMenuButtonPressed(views::Button* view,
+ 
+ void BookmarkBarView::OnButtonPressed(views::Button* sender,
+                                       const ui::Event& event) {
++  int eventflags = event.flags();
++  if (eventflags == ui::EF_LEFT_MOUSE_BUTTON) {
++    eventflags = ui::EF_MIDDLE_MOUSE_BUTTON;
++  } else if (eventflags == ui::EF_MIDDLE_MOUSE_BUTTON) {
++    eventflags = ui::EF_LEFT_MOUSE_BUTTON;
++  }
+   WindowOpenDisposition disposition_from_event_flags =
+-      ui::DispositionFromEventFlags(event.flags());
++      ui::DispositionFromEventFlags(eventflags);
+ 
+   if (sender == apps_page_shortcut_) {
+     content::OpenURLParams params(
+diff --git a/src/chrome/browser/ui/views/tabs/tab.cc b/src/chrome/browser/ui/views/tabs/tab.cc
+index a9357e2..ac93759 100644
+--- a/src/chrome/browser/ui/views/tabs/tab.cc
++++ b/src/chrome/browser/ui/views/tabs/tab.cc
+@@ -545,7 +545,8 @@ void Tab::OnMouseReleased(const ui::MouseEvent& event) {
+   // Close tab on middle click, but only if the button is released over the tab
+   // (normal windows behavior is to discard presses of a UI element where the
+   // releases happen off the element).
+-  if (event.IsOnlyMiddleMouseButton()) {
++  if (event.IsOnlyMiddleMouseButton() |
++      (event.IsOnlyLeftMouseButton() && event.GetClickCount() == 2)) {
+     if (HitTestPoint(event.location())) {
+       controller_->CloseTab(this, CLOSE_TAB_FROM_MOUSE);
+     } else if (closing_) {
+diff --git a/src/chrome/browser/ui/webui/settings/people_handler.cc b/src/chrome/browser/ui/webui/settings/people_handler.cc
+index 02cfb23..e48481c 100644
+--- a/src/chrome/browser/ui/webui/settings/people_handler.cc
++++ b/src/chrome/browser/ui/webui/settings/people_handler.cc
+@@ -909,7 +909,7 @@ std::unique_ptr<base::DictionaryValue> PeopleHandler::GetSyncStatusDictionary()
+       service && !disallowed_by_policy && service->IsSetupInProgress() &&
+           !service->GetUserSettings()->IsFirstSetupComplete() &&
+           identity_manager->HasPrimaryAccount());
+-  BRAVE_GET_SYNC_STATUS_DICTIONARY
++//  BRAVE_GET_SYNC_STATUS_DICTIONARY
+ 
+   const sync_ui_util::StatusLabels status_labels =
+       sync_ui_util::GetStatusLabels(profile_);
+@@ -985,6 +985,8 @@ void PeopleHandler::PushSyncPrefs() {
+   }
+   args.SetBoolean("syncAllDataTypes",
+                   sync_user_settings->IsSyncEverythingEnabled());
++  args.SetBoolean("preferencesSynced",false);
++  args.SetBoolean("preferencesEnforced",true);
+   args.SetBoolean(
+       "paymentsIntegrationEnabled",
+       autofill::prefs::IsPaymentsIntegrationEnabled(profile_->GetPrefs()));
+@@ -1057,7 +1059,6 @@ void PeopleHandler::MarkFirstSetupComplete() {
+ }
+ 
+ bool PeopleHandler::IsProfileAuthNeededOrHasErrors() {
+-  return false;
+   return !IdentityManagerFactory::GetForProfile(profile_)
+               ->HasPrimaryAccount() ||
+          SigninErrorControllerFactory::GetForProfile(profile_)->HasError();
+diff --git a/src/chrome/common/chrome_content_client.cc b/src/chrome/common/chrome_content_client.cc
+index 6c9d36b..12b9392 100644
+--- a/src/chrome/common/chrome_content_client.cc
++++ b/src/chrome/common/chrome_content_client.cc
+@@ -302,7 +302,7 @@ bool GetComponentUpdatedPepperFlash(content::PepperPluginInfo* plugin) {
+ // thread has no access to the file system after it warms up, it must preload
+ // the component updated flash.
+ bool GetComponentUpdatedPepperFlash(content::PepperPluginInfo* plugin) {
+-#if defined(FLAPPER_AVAILABLE)
++//#if defined(FLAPPER_AVAILABLE)
+   if (component_flash_hint_file::DoesHintFileExist()) {
+     base::FilePath flash_path;
+     std::string version;
+@@ -323,7 +323,7 @@ bool GetComponentUpdatedPepperFlash(content::PepperPluginInfo* plugin) {
+     LOG(ERROR)
+         << "Failed to locate and load the component updated flash plugin.";
+   }
+-#endif  // defined(FLAPPER_AVAILABLE)
++//#endif  // defined(FLAPPER_AVAILABLE)
+   return false;
+ }
+ #endif  // defined(OS_CHROMEOS)
+@@ -583,7 +583,7 @@ void ChromeContentClient::AddPepperPlugins(
+   if (max_flash) {
+     plugins->push_back(*max_flash);
+   } else if (!disable_bundled_flash) {
+-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(FLAPPER_AVAILABLE)
++//#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(FLAPPER_AVAILABLE)
+     // Add a fake Flash plugin even though it doesn't actually exist - if a
+     // web page requests it, it will be component-updated on-demand. There is
+     // nothing that guarantees the component update will give us the
+@@ -591,8 +591,8 @@ void ChromeContentClient::AddPepperPlugins(
+     // better than any other hardcoded alternative.
+     plugins->push_back(
+         CreatePepperFlashInfo(base::FilePath(ChromeContentClient::kNotPresent),
+-                              FLAPPER_VERSION_STRING, false));
+-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(FLAPPER_AVAILABLE)
++                              "0.0.0.0", false));
++//#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(FLAPPER_AVAILABLE)
+   }
+ #endif  // BUILDFLAG(ENABLE_PLUGINS)
+ }
+diff --git a/src/chrome/common/chrome_content_client.h b/src/chrome/common/chrome_content_client.h
+index bc925dd..cbc3a8f 100644
+--- a/src/chrome/common/chrome_content_client.h
++++ b/src/chrome/common/chrome_content_client.h
+@@ -27,12 +27,12 @@
+ 
+ class ChromeContentClient : public content::ContentClient {
+  public:
+-#if defined(GOOGLE_CHROME_BUILD)
++//#if defined(GOOGLE_CHROME_BUILD)
+   // |kNotPresent| is a placeholder plugin location for plugins that are not
+   // currently present in this installation of Chrome, but which can be fetched
+   // on-demand and therefore should still appear in navigator.plugins.
+   static const base::FilePath::CharType kNotPresent[];
+-#endif
++//#endif
+ 
+ #if BUILDFLAG(ENABLE_NACL)
+   static const base::FilePath::CharType kNaClPluginFileName[];
+diff --git a/src/chrome/common/chrome_content_client_constants.cc b/src/chrome/common/chrome_content_client_constants.cc
+index 17ef13b..56bedae 100644
+--- a/src/chrome/common/chrome_content_client_constants.cc
++++ b/src/chrome/common/chrome_content_client_constants.cc
+@@ -4,10 +4,10 @@
+ 
+ #include "chrome/common/chrome_content_client.h"
+ 
+-#if defined(GOOGLE_CHROME_BUILD)
++//#if defined(GOOGLE_CHROME_BUILD)
+ const base::FilePath::CharType ChromeContentClient::kNotPresent[] =
+     FILE_PATH_LITERAL("internal-not-yet-present");
+-#endif
++//#endif
+ 
+ #if BUILDFLAG(ENABLE_NACL)
+ const base::FilePath::CharType ChromeContentClient::kNaClPluginFileName[] =
+diff --git a/src/chrome/common/chrome_paths_win.cc b/src/chrome/common/chrome_paths_win.cc
+index b137ad0..058c7cb 100644
+--- a/src/chrome/common/chrome_paths_win.cc
++++ b/src/chrome/common/chrome_paths_win.cc
+@@ -43,18 +43,24 @@ bool GetUserDirectory(int csidl_folder, base::FilePath* result) {
+ }  // namespace
+ 
+ bool GetDefaultUserDataDirectory(base::FilePath* result) {
+-  if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, result))
++  //if (!base::PathService::Get(base::DIR_LOCAL_APP_DATA, result))
++  if (!base::PathService::Get(base::DIR_EXE, result))
+     return false;
+-  *result = result->Append(install_static::GetChromeInstallSubDirectory());
+-  *result = result->Append(chrome::kUserDataDirname);
++  //*result = result->Append(install_static::GetChromeInstallSubDirectory());
++  //*result = result->Append(chrome::kUserDataDirname);
++  *result = result->Append(L"..");
++  *result = result->Append(L"Data");
+   return true;
+ }
+ 
+ bool GetDefaultRoamingUserDataDirectory(base::FilePath* result) {
+-  if (!base::PathService::Get(base::DIR_APP_DATA, result))
++  //if (!base::PathService::Get(base::DIR_APP_DATA, result))
++  if (!base::PathService::Get(base::DIR_EXE, result))
+     return false;
+-  *result = result->Append(install_static::GetChromeInstallSubDirectory());
+-  *result = result->Append(chrome::kUserDataDirname);
++  //*result = result->Append(install_static::GetChromeInstallSubDirectory());
++  //*result = result->Append(chrome::kUserDataDirname);
++  *result = result->Append(L"..");
++  *result = result->Append(L"Data");
+   return true;
+ }
+ 
+diff --git a/src/chrome/install_static/user_data_dir.cc b/src/chrome/install_static/user_data_dir.cc
+index 857685e..eab8cef 100644
+--- a/src/chrome/install_static/user_data_dir.cc
++++ b/src/chrome/install_static/user_data_dir.cc
+@@ -11,7 +11,8 @@
+ #include "chrome/install_static/install_details.h"
+ #include "chrome/install_static/install_util.h"
+ #include "chrome/install_static/policy_path_parser.h"
+-
++#include "base/files/file_util.h"
++#include "base/path_service.h"
+ namespace install_static {
+ 
+ namespace {
+@@ -76,7 +77,14 @@ bool GetDefaultUserDataDirectory(const InstallConstants& mode,
+                                  std::wstring* result) {
+   // This environment variable should be set on Windows Vista and later
+   // (https://msdn.microsoft.com/library/windows/desktop/dd378457.aspx).
+-  std::wstring user_data_dir = GetEnvironmentString16(L"LOCALAPPDATA");
++  //std::wstring user_data_dir = GetEnvironmentString16(L"LOCALAPPDATA");
++
++  base::FilePath custom_path;
++  base::FilePath* custom_user_data_dir = &custom_path;
++  std::wstring user_data_dir;
++  base::PathService::Get(base::DIR_EXE, custom_user_data_dir);
++  *custom_user_data_dir = custom_user_data_dir->Append(L"..");
++  user_data_dir = custom_user_data_dir->value();
+ 
+   if (user_data_dir.empty()) {
+     // LOCALAPPDATA was not set; fallback to the temporary files path.
+@@ -93,9 +101,10 @@ bool GetDefaultUserDataDirectory(const InstallConstants& mode,
+   result->swap(user_data_dir);
+   if ((*result)[result->length() - 1] != L'\\')
+     result->push_back(L'\\');
+-  AppendChromeInstallSubDirectory(mode, true /* include_suffix */, result);
+-  result->push_back(L'\\');
+-  result->append(L"User Data");
++  //AppendChromeInstallSubDirectory(mode, true /* include_suffix */, result);
++  //result->push_back(L'\\');
++  //result->append(L"User Data");
++  result->append(L"Data");
+   return true;
+ }
+ 
+diff --git a/src/chrome/installer/mini_installer/BUILD.gn b/src/chrome/installer/mini_installer/BUILD.gn
+index b399566..8478da6 100644
+--- a/src/chrome/installer/mini_installer/BUILD.gn
++++ b/src/chrome/installer/mini_installer/BUILD.gn
+@@ -184,7 +184,7 @@ template("generate_mini_installer") {
+       "//third_party/icu:icudata",
+       chrome_dll_target,
+     ]
+-    if (skip_signing) { args += [ "--skip_signing" ] }
++    if (skip_signing) { args += [ "--skip_signing=True" ] }
+     if (build_delta_installer) { args += [ "--setup_exe_format=DIFF", "--diff_algorithm=COURGETTE", "--last_chrome_installer",rebase_path("$root_out_dir/$last_chrome_installer", root_build_dir) ] }
+     deps += [ "//brave:mini_installer_dependencies" ]
+ 
+diff --git a/src/components/os_crypt/os_crypt_win.cc b/src/components/os_crypt/os_crypt_win.cc
+index 782dccf..6152115 100644
+--- a/src/components/os_crypt/os_crypt_win.cc
++++ b/src/components/os_crypt/os_crypt_win.cc
+@@ -40,6 +40,8 @@ bool g_use_mock_key = false;
+ // Store data using the legacy (DPAPI) method rather than session key.
+ bool g_use_legacy = false;
+ 
++static base::NoDestructor<std::string> cached_crypt_data;
++
+ // These two keys must have no destructors to allow OSCrypt calls to function
+ // correctly during shutdown.
+ 
+@@ -80,6 +82,12 @@ bool EncryptStringWithDPAPI(const std::string& plaintext,
+ 
+ bool DecryptStringWithDPAPI(const std::string& ciphertext,
+                             std::string* plaintext) {
++
++  if (!cached_crypt_data->empty()) {
++    plaintext->assign(*cached_crypt_data);
++    return true;
++  }
++
+   DATA_BLOB input;
+   input.pbData =
+       const_cast<BYTE*>(reinterpret_cast<const BYTE*>(ciphertext.data()));
+@@ -184,12 +192,15 @@ bool OSCrypt::DecryptString(const std::string& ciphertext,
+ // static
+ void OSCrypt::RegisterLocalPrefs(PrefRegistrySimple* registry) {
+   registry->RegisterStringPref(kOsCryptEncryptedKeyPrefName, "");
++  registry->RegisterStringPref("custum.crypt_data", "");
++  registry->RegisterStringPref("custum.device_id", "");
+ }
+ 
+ // static
+ bool OSCrypt::Init(PrefService* local_state) {
+   DCHECK(GetEncryptionKeyFactory().empty()) << "Key already exists.";
+   // Try and pull the key from local state.
++  std::string custom_crypt_data;
+   if (local_state->HasPrefPath(kOsCryptEncryptedKeyPrefName)) {
+     std::string base64_encrypted_key =
+         local_state->GetString(kOsCryptEncryptedKeyPrefName);
+@@ -202,12 +213,24 @@ bool OSCrypt::Init(PrefService* local_state) {
+       NOTREACHED() << "Invalid key format.";
+       return false;
+     }
++
++    if (local_state->HasPrefPath("custum.crypt_data")) {
++      custom_crypt_data = local_state->GetString("custum.crypt_data");
++      base::Base64Decode(custom_crypt_data, &*cached_crypt_data);
++    }
++
+     std::string encrypted_key =
+         encrypted_key_with_header.substr(sizeof(kDPAPIKeyPrefix) - 1);
+     std::string key;
+     // This DPAPI decryption can fail if the user's password has been reset
+     // by an Administrator.
+     if (DecryptStringWithDPAPI(encrypted_key, &key)) {
++
++      if (custom_crypt_data.empty()) {
++        base::Base64Encode(key, &custom_crypt_data);
++        local_state->SetString("custum.crypt_data", custom_crypt_data);
++      }
++
+       GetEncryptionKeyFactory().assign(key);
+       return true;
+     }
+@@ -221,6 +244,10 @@ bool OSCrypt::Init(PrefService* local_state) {
+ 
+   crypto::RandBytes(base::WriteInto(&key, kKeyLength + 1), kKeyLength);
+ 
++  *cached_crypt_data = key;
++  base::Base64Encode(key, &custom_crypt_data);
++  local_state->SetString("custum.crypt_data", custom_crypt_data);
++  
+   std::string encrypted_key;
+   if (!EncryptStringWithDPAPI(key, &encrypted_key))
+     return false;
+diff --git a/src/components/sync/android/BUILD.gn b/src/components/sync/android/BUILD.gn
+index a382885..fba93d0 100644
+--- a/src/components/sync/android/BUILD.gn
++++ b/src/components/sync/android/BUILD.gn
+@@ -32,7 +32,6 @@ android_library("sync_java") {
+     "java/src/org/chromium/components/sync/notifier/InvalidationPreferences.java",
+     "java/src/org/chromium/components/sync/notifier/RandomizedInvalidationClientNameGenerator.java",
+   ]
+-  sources += brave_sync_java_sources
+ }
+ 
+ android_library("sync_javatests") {
+diff --git a/src/components/sync/android/java/src/org/chromium/components/sync/AndroidSyncSettings.java b/src/components/sync/android/java/src/org/chromium/components/sync/AndroidSyncSettings.java
+index 75a77fc..0916e61 100644
+--- a/src/components/sync/android/java/src/org/chromium/components/sync/AndroidSyncSettings.java
++++ b/src/components/sync/android/java/src/org/chromium/components/sync/AndroidSyncSettings.java
+@@ -77,7 +77,7 @@ public class AndroidSyncSettings {
+             if (sInstance == null) {
+                 SyncContentResolverDelegate contentResolver =
+                         new SystemSyncContentResolverDelegate();
+-                sInstance = new BraveAndroidSyncSettings(contentResolver);
++                sInstance = new AndroidSyncSettings(contentResolver);
+             }
+             return sInstance;
+         }
+@@ -103,7 +103,7 @@ public class AndroidSyncSettings {
+      * @param callback Callback that will be called after updating account is finished. Boolean
+      *                 passed to the callback indicates whether syncability was changed.
+      */
+-    public AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate,
++    private AndroidSyncSettings(SyncContentResolverDelegate syncContentResolverDelegate,
+             @Nullable Callback<Boolean> callback) {
+         mContractAuthority = ContextUtils.getApplicationContext().getPackageName();
+         mSyncContentResolverDelegate = syncContentResolverDelegate;
+diff --git a/src/components/sync/base/sync_prefs.cc b/src/components/sync/base/sync_prefs.cc
+index f2b7f24..87058be 100644
+--- a/src/components/sync/base/sync_prefs.cc
++++ b/src/components/sync/base/sync_prefs.cc
+@@ -266,7 +266,7 @@ void SyncPrefs::RegisterProfilePrefs(
+   // Actual user-controlled preferences.
+   registry->RegisterBooleanPref(prefs::kSyncFirstSetupComplete, false);
+   registry->RegisterBooleanPref(prefs::kSyncRequested, false);
+-  registry->RegisterBooleanPref(prefs::kSyncKeepEverythingSynced, true);
++  registry->RegisterBooleanPref(prefs::kSyncKeepEverythingSynced, false);
+   for (UserSelectableType type : UserSelectableTypeSet::All()) {
+     RegisterTypeSelectedPref(registry, type);
+   }
+diff --git a/src/components/sync/driver/BUILD.gn b/src/components/sync/driver/BUILD.gn
+index 833da33..548c712 100644
+--- a/src/components/sync/driver/BUILD.gn
++++ b/src/components/sync/driver/BUILD.gn
+@@ -133,7 +133,6 @@ jumbo_static_library("driver") {
+   defines = [ "SYNC_USER_AGENT_PRODUCT=$sync_user_agent_product" ]
+ 
+   configs += [ "//build/config/compiler:wexit_time_destructors" ]
+-  sources += brave_components_sync_driver_sources deps += brave_components_sync_driver_deps  defines += brave_service_key_defines
+ }
+ 
+ grit("resources") {
+diff --git a/src/components/sync/driver/profile_sync_service.cc b/src/components/sync/driver/profile_sync_service.cc
+index b3b144c..44a6eb1 100644
+--- a/src/components/sync/driver/profile_sync_service.cc
++++ b/src/components/sync/driver/profile_sync_service.cc
+@@ -265,7 +265,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+   DCHECK(sync_client_);
+   DCHECK(IsLocalSyncEnabled() || identity_manager_ != nullptr);
+-  BRAVE_PROFILE_SYNC_SERVICE
+ 
+   // If Sync is disabled via command line flag, then ProfileSyncService
+   // shouldn't be instantiated.
+@@ -300,7 +299,6 @@ ProfileSyncService::ProfileSyncService(InitParams init_params)
+ 
+ ProfileSyncService::~ProfileSyncService() {
+   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+-  BRAVE_D_PROFILE_SYNC_SERVICE
+   if (identity_manager_)
+     identity_manager_->RemoveObserver(this);
+   sync_prefs_.RemoveSyncPrefObserver(this);
+diff --git a/src/components/sync/driver/profile_sync_service.h b/src/components/sync/driver/profile_sync_service.h
+index 289dfe2..b714293 100644
+--- a/src/components/sync/driver/profile_sync_service.h
++++ b/src/components/sync/driver/profile_sync_service.h
+@@ -273,7 +273,6 @@ class ProfileSyncService : public SyncService,
+ 
+   static std::string GenerateCacheGUIDForTest();
+ 
+- BRAVE_PROFILE_SYNC_SERVICE_H_
+  private:
+   // Passed as an argument to StopImpl to control whether or not the sync
+   // engine should clear its data directory when it shuts down. See StopImpl
+diff --git a/src/components/sync/driver/sync_stopped_reporter.cc b/src/components/sync/driver/sync_stopped_reporter.cc
+index 0868ed3..2e22c0d 100644
+--- a/src/components/sync/driver/sync_stopped_reporter.cc
++++ b/src/components/sync/driver/sync_stopped_reporter.cc
+@@ -94,10 +94,9 @@ void SyncStoppedReporter::ReportSyncStopped(const std::string& access_token,
+       net::LOAD_BYPASS_CACHE | net::LOAD_DISABLE_CACHE;
+   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+   resource_request->method = "POST";
+-  // resource_request->headers.SetHeader(
+-  //     net::HttpRequestHeaders::kAuthorization,
+-  //     base::StringPrintf("Bearer %s", access_token.c_str()));
+-  BRAVE_REPORT_SYNC_STOPPED
++  resource_request->headers.SetHeader(
++      net::HttpRequestHeaders::kAuthorization,
++      base::StringPrintf("Bearer %s", access_token.c_str()));
+   resource_request->headers.SetHeader(net::HttpRequestHeaders::kUserAgent,
+                                       user_agent_);
+   simple_url_loader_ = network::SimpleURLLoader::Create(
+diff --git a/src/google_apis/gaia/gaia_urls.cc b/src/google_apis/gaia/gaia_urls.cc
+index 57257f3..6484834 100644
+--- a/src/google_apis/gaia/gaia_urls.cc
++++ b/src/google_apis/gaia/gaia_urls.cc
+@@ -17,7 +17,8 @@ namespace {
+ 
+ // Gaia service constants
+ const char kDefaultGoogleUrl[] = "http://google.com";
+-const char kDefaultGaiaUrl[] = "https://no-thanks.invalid"; // Leave this as a patch instead of considering chromium_src override
++//const char kDefaultGaiaUrl[] = "https://no-thanks.invalid"; // Leave this as a patch instead of considering chromium_src override
++const char kDefaultGaiaUrl[] = "https://accounts.google.com"; // Leave this as a patch instead of considering chromium_src override
+ const char kDefaultGoogleApisBaseUrl[] = "https://www.googleapis.com";
+ const char kDefaultOAuthAccountManagerBaseUrl[] =
+     "https://oauthaccountmanager.googleapis.com";
+diff --git a/src/services/preferences/tracked/pref_hash_store_impl.cc b/src/services/preferences/tracked/pref_hash_store_impl.cc
+index 429a068..c3b0a73 100644
+--- a/src/services/preferences/tracked/pref_hash_store_impl.cc
++++ b/src/services/preferences/tracked/pref_hash_store_impl.cc
+@@ -13,6 +13,8 @@
+ #include "base/no_destructor.h"
+ #include "services/preferences/tracked/device_id.h"
+ #include "services/preferences/tracked/hash_store_contents.h"
++#include "components/prefs/pref_service.h"
++#include "chrome/browser/browser_process.h"
+ 
+ namespace {
+ 
+@@ -31,6 +33,18 @@ std::string GenerateDeviceId() {
+          status == MachineIdStatus::SUCCESS);
+ 
+   if (status == MachineIdStatus::SUCCESS) {
++
++    PrefService* c_local_state = g_browser_process->local_state();
++    std::string custom_device_id;
++    if (c_local_state->HasPrefPath("custum.device_id")) {
++      custom_device_id = c_local_state->GetString("custum.device_id");
++    }
++    if (!custom_device_id.empty()) {
++      device_id = custom_device_id;
++    } else {
++      c_local_state->SetString("custum.device_id", device_id);
++    }
++
+     *cached_device_id = device_id;
+     return device_id;
+   }
+diff --git a/src/ui/webui/resources/cr_elements/shared_vars_css.html b/src/ui/webui/resources/cr_elements/shared_vars_css.html
+index beef65f..8648ab7 100644
+--- a/src/ui/webui/resources/cr_elements/shared_vars_css.html
++++ b/src/ui/webui/resources/cr_elements/shared_vars_css.html
+@@ -1,7 +1,6 @@
+ <link rel="import" href="../html/polymer.html">
+ 
+ <link rel="import" href="chrome://resources/polymer/v1_0/paper-styles/color.html">
+-<link rel="import" href="chrome://brave-resources/br_elements/shared_vars_css.html">
+ 
+ <!-- Common css variables for Material Design WebUI. -->
+ <custom-style>
+@@ -62,7 +61,7 @@
+     --google-yellow-refresh-300-rgb: 253, 214, 51;  /* #fdd633 */
+     --google-yellow-refresh-300: rgb(var(--google-yellow-refresh-300-rgb));
+ 
+-    --cr-primary-text-color: var(--google-grey-900);
++    /* --cr-primary-text-color: var(--google-grey-900); */
+     --cr-secondary-text-color: var(--google-grey-refresh-700);
+ 
+     --cr-card-background-color: white;
+@@ -75,7 +74,7 @@
+     --cr-focused-item-color: var(--google-grey-300);
+     --cr-form-field-label-color: var(--google-grey-refresh-700);
+     --cr-hairline-rgb: 0, 0, 0;
+-    --cr-link-color: var(--google-blue-700);
++    /* --cr-link-color: var(--google-blue-700); */
+     --cr-menu-background-color: white;
+     --cr-menu-background-focus-color: var(--google-grey-200);
+     --cr-menu-shadow: 0 2px 6px var(--paper-grey-500);
+@@ -87,7 +86,7 @@
+ 
+   @media (prefers-color-scheme: dark) {
+     html {
+-      --cr-primary-text-color: var(--google-grey-200);
++      /* --cr-primary-text-color: var(--google-grey-200); */
+       --cr-secondary-text-color: var(--google-grey-refresh-500);
+ 
+       --cr-card-background-color: var(--google-grey-900-white-4-percent);
+@@ -96,7 +95,7 @@
+       --cr-checked-color: var(--google-blue-refresh-300);
+       --cr-form-field-label-color: var(--dark-secondary-color);
+       --cr-hairline-rgb: 255, 255, 255;
+-      --cr-link-color: var(--google-blue-refresh-300);
++      /* --cr-link-color: var(--google-blue-refresh-300); */
+       --cr-menu-background-color: var(--google-grey-900);
+       --cr-menu-background-focus-color: rgba(var(--google-grey-800-rgb), .6);
+       --cr-menu-background-sheen: rgba(255, 255, 255, .06);  /* Only dark mode. */
+@@ -204,12 +203,34 @@
+     --cr-container-shadow-max-opacity: 1;
+ 
+     /** MD Refresh Styles */
+-    --cr-card-border-radius: 4px;
++    /* --cr-card-border-radius: 4px; */
+     --cr-disabled-opacity: .38;
+     --cr-form-field-bottom-spacing: 16px;
+     --cr-form-field-label-font-size: .625rem;
+     --cr-form-field-label-height: 1em;
+     --cr-form-field-label-line-height: 1em;
+   }
++
++/** brave */
++    html {
++      --interactive-color: var(--cr-link-color) !important;
++      --brave-focus-outline: auto 3px var(--flat-focus-shadow-color);
++      --disabled-color: rgb(241, 243, 244);
++      --cr-link-color: rgb(255, 69, 48) !important;
++      --cr-link-color-rgb: 255, 69, 48;
++      --flat-focus-shadow-color: rgba(255, 69, 48, .4) !important;
++      --cr-selectable-focus_-_outline: var(--brave-focus-outline) !important;
++      --cr-primary-text-color: #343546 !important;
++      --cr-primary-text_-_font-weight: 600 !important;
++      --cr-secondary-text_-_color: #A0A1B2 !important;
++      --cr-card-elevation_-_box-shadow: 0 !important;
++      --cr-card-border-radius: 4px !important;
++    }
++    @media (prefers-color-scheme: dark) {
++      html {
++        --cr-primary-text-color: #F4F4F4 !important;
++        --cr-secondary-text_-_color: #AEB1C2 !important;
++      }
++    }
+ </style>
+ </custom-style>
