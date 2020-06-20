@@ -11,6 +11,7 @@
     - 运行run.bat
     - 正常编译Brave
 - 可以下载out中已编译完成版本（同步功能使用了个人申请的GoogleAPI，不影响安全，但是不保证配额一直足够使用！）
+    - https://github.com/bigfoxtail/FOX_Brave/raw/master/out/Brave-v1.12.27.7z
 
 ### 说明
 去除了一些不必要的广告奖励功能，保留了隐私保护及去广告功能
